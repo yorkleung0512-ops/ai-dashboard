@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-HK" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>York's AI Projects & Toolchain Command Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', 'Noto Sans TC', sans-serif; background:#090d16; color:#f1f5f9; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-30 px-4 py-3">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white shadow">⚡</div>
+        <div>
+          <h1 class="font-bold text-base text-white">York's AI Projects & Toolchain Command Center</h1>
+          <p class="text-xs text-slate-400">Single Source of Truth · 跨項目 AI 工具分工與 Sub-tasks 控制中心</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="openSyncModal()" class="text-xs px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 font-medium">☁️ GitHub Gist 跨裝置同步</button>
+        <button onclick="resetDefault()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">🔄 重置預設數據</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl w-full mx-auto px-4 py-6 space-y-6 flex-1">
+    <section>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-bold text-indigo-300 uppercase tracking-wider">🤖 各項目 AI 工具分工總覽 (Project AI Toolchain Matrix)</h2>
+        <span class="text-xs text-slate-400">點擊項目可過濾下方 Tasks</span>
+      </div>
+      <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+    </section>
+
+    <section class="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5">
+        <input id="newTitle" type="text" placeholder="+ 輸入新 Task（例如：重構 Yorlio Landing Page Hero Section）..." class="md:col-span-4 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
+        <select id="newProject" class="md:col-span-2 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-200"></select>
+        <input id="newAiTool" type="text" placeholder="🤖 AI 工具 (如 Claude MCP)" class="md:col-span-2 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-300">
+        <input id="newAiRole" type="text" placeholder="🛠️ 負責做緊乜嘢..." class="md:col-span-3 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300">
+        <button onclick="addTask()" class="md:col-span-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg px-3 py-2 text-xs">新增</button>
+      </div>
+    </section>
+
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+      <div class="flex items-center gap-2">
+        <button onclick="setTab('focus')" id="tab-focus" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white">🔥 今日焦點 (Today's Focus)</button>
+        <button onclick="setTab('kanban')" id="tab-kanban" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 hover:text-white">🎛️ 項目看板 (Kanban)</button>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="filterLabel" class="text-xs text-slate-400">顯示全部 Projects</span>
+        <button onclick="filterProject('ALL')" class="text-xs px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700">顯示全部</button>
+      </div>
+    </div>
+
+    <div id="viewContainer"></div>
+  </main>
+
+  <div id="syncModal" class="fixed inset-0 bg-black/75 hidden items-center justify-center z-50 p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-5 space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-sm text-white">☁️ GitHub Gist 跨裝置雲端同步 (手機 / 電腦互通)</h3>
+        <button onclick="closeSyncModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <p class="text-xs text-slate-400">輸入你嘅 GitHub Token (需勾選 <code class="text-emerald-300">gist</code> 權限)，即可將進度同步上雲端，喺手機或屋企電腦隨時 Pull / Push。</p>
+      <div class="space-y-2.5">
+        <input id="gistToken" type="password" placeholder="GitHub Token (ghp_...)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white mono">
+        <input id="gistId" type="text" placeholder="Gist ID (留空可撳下方自動建立)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white mono">
+      </div>
+      <div class="flex flex-wrap gap-2 pt-2">
+        <button onclick="pushGist()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-2 rounded-lg">⬆️ Push 上雲端</button>
+        <button onclick="pullGist()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold py-2 rounded-lg">⬇️ 從雲端 Pull</button>
+      </div>
+      <p id="syncMsg" class="text-xs text-center text-slate-400"></p>
+    </div>
+  </div>
+
+<script>
+const DEFAULT_DATA = {
+  projects: [
+    {
+      id: 'yorlio-web',
+      name: '📈 Yorlio.com (資產情報中樞)',
+      desc: '跨券商與多幣種資產追蹤、AI 客觀風險診斷與 SEO 轉換',
+      tools: [
+        { tool: 'Atoms.dev / Base44', role: '生成 SaaS 前端原型、Onboarding 流程與響應式 UI' },
+        { tool: 'Claude / ChatGPT MCP', role: '執行跨券商持倉客觀風險診斷與資產配置分析 Agent' },
+        { tool: 'Cloudflare / Gemini', role: 'SEO 結構化標記、Crawler 權限排查與着陸頁文案優化' }
+      ]
+    },
+    {
+      id: 'yorlio-app',
+      name: '📱 Yorlio App 雙平台 & 架構遷移',
+      desc: 'Android/iOS 封裝發布及遷移至 Vercel + Supabase 架構',
+      tools: [
+        { tool: 'Capacitor / TWA', role: '將 Web App 封裝為 Android (AAB) 與 iOS 原生容器' },
+        { tool: 'Supabase + Vercel', role: '負責 PostgreSQL 多幣種 DB、RLS 權限控制與低成本部署' },
+        { tool: 'Gemini / Cursor', role: '撰寫 SQL Migration、重構 API routes 與修復跨平台 CORS' }
+      ]
+    },
+    {
+      id: 'ai-youtube',
+      name: '🎬 AI YouTube 自動化媒體工廠',
+      desc: 'AI 視覺生成流水線、兒童卡通、Viral Shorts 與 SEO 自動化',
+      tools: [
+        { tool: 'Google Flow / Kling AI', role: '生成高一致性角色卡通分鏡與動態視覺素材' },
+        { tool: 'Runway Gen-3', role: '製作高質感 B-roll 與特效轉場畫面' },
+        { tool: 'Gemini + Google Trends', role: '挖掘爆款關鍵字、撰寫高留存腳本與 SEO 標題公式' }
+      ]
+    },
+    {
+      id: 'ai-incubate',
+      name: '🧪 AI 創業原型孵化器 (MVP)',
+      desc: '香港零售智能格價工具、早教及 AI 遠距工作媒合原型',
+      tools: [
+        { tool: 'Lovable / Vibe Coding', role: '快速生成香港超市/藥房智能格價工具與早教 MVP 前端' },
+        { tool: 'Gemini API', role: '自動化擷取 HKTVmall/萬寧/百佳/屈臣氏價格並生成比價摘要' }
+      ]
+    }
+  ],
+  tasks: [
+    {
+      id: 't1', projectId: 'yorlio-web', title: '重構 Yorlio.com Landing Page Hero Section 與核心價值主張',
+      status: 'in-progress', priority: true, aiTool: 'Atoms.dev + Gemini', aiRole: '生成高轉換 Hero 版面與中英對照金融痛點 Copywriting',
+      note: '強化「跨券商（中銀/富途等）+ 多幣種客觀風險診斷」定位',
+      subtasks: [
+        { text: '完成 Hero 標題與 CTA 按鈕階層重構', done: true },
+        { text: '加入跨券商持倉整合視覺預覽圖', done: false },
+        { text: '檢查 Mobile 版面響應式對齊', done: false }
+      ]
+    },
+    {
+      id: 't2', projectId: 'yorlio-web', title: '整合 Claude / ChatGPT MCP 跨券商風險診斷 JSON Schema',
+      status: 'todo', priority: true, aiTool: 'Claude / ChatGPT MCP', aiRole: '讀取跨券商持倉 JSON 並輸出集中度、派息率與匯率風險診斷',
+      note: '確保輸出純客觀數據診斷（港股收息股/REITs 與美股科技股比例）',
+      subtasks: [
+        { text: '定義標準化 Portfolio JSON Schema', done: true },
+        { text: '測試高息 ETF (3466/3110) 與美股 AI 股混合診斷 Prompt', done: false }
+      ]
+    },
+    {
+      id: 't3', projectId: 'yorlio-app', title: '遷移資料庫至 Supabase + Vercel 並設計多幣種持倉 Schema',
+      status: 'in-progress', priority: true, aiTool: 'Supabase + Gemini', aiRole: '自動生成 PostgreSQL Schema、RLS Policy 與 Auth 整合代碼',
+      note: '降低長期 SaaS 營運成本，擺脫單一平台鎖定',
+      subtasks: [
+        { text: '建立 accounts, holdings, dividends 三張核心 Table', done: false },
+        { text: '設定 Row Level Security (RLS) 確保用戶資料隔離', done: false }
+      ]
+    },
+    {
+      id: 't4', projectId: 'yorlio-app', title: 'Android App (TWA / Capacitor) 封裝與 Google Play Internal 測試',
+      status: 'todo', priority: false, aiTool: 'Capacitor / TWA', aiRole: '打包簽名 AAB 檔案並驗證 Digital Asset Links',
+      note: '檢查 /.well-known/assetlinks.json 確保全螢幕無瀏覽器網址列',
+      subtasks: [
+        { text: '部署 assetlinks.json 至生產環境', done: true },
+        { text: '上傳 AAB 至 Google Play Console Internal Track', done: false }
+      ]
+    },
+    {
+      id: 't5', projectId: 'ai-youtube', title: '建立自動化 YouTube Shorts 兒童卡通與爆款腳本流水線',
+      status: 'todo', priority: true, aiTool: 'Google Flow + Kling AI', aiRole: '固定角色 Seed 生成連貫分鏡並配合 Gemini 輸出腳本',
+      note: '結合 Google Trends 熱門育兒/科技話題提升自然推薦率',
+      subtasks: [
+        { text: '建立固定角色外觀 Prompt 模板', done: true },
+        { text: '批量生成首 3 條 Shorts 測試完播率', done: false }
+      ]
+    },
+    {
+      id: 't6', projectId: 'ai-incubate', title: '香港零售智能格價工具原型（奶粉/日用品跨平台比價）',
+      status: 'todo', priority: false, aiTool: 'Lovable + Gemini API', aiRole: '快速建立比價搜尋 UI 並結構化提取各大零售商優惠',
+      note: '涵蓋 HKTVmall、萬寧、百佳、惠康、屈臣氏及本地藥房價格對比',
+      subtasks: [
+        { text: '定義商品規格與單價折算欄位', done: true },
+        { text: '完成格價列表與最低價提示 UI 原型', done: false }
+      ]
+    }
+  ]
+};
+
+let state = JSON.parse(localStorage.getItem('york_ai_dash_v3')) || DEFAULT_DATA;
+let currentTab = 'focus';
+let activeProject = 'ALL';
+
+function save() { localStorage.setItem('york_ai_dash_v3', JSON.stringify(state)); render(); }
+function resetDefault() { if (confirm('確定要載入/重置預設嘅 4 大 AI Projects 與工具分工數據？')) { state = JSON.parse(JSON.stringify(DEFAULT_DATA)); save(); } }
+function filterProject(id) { activeProject = id; render(); }
+function setTab(tab) {
+  currentTab = tab;
+  document.getElementById('tab-focus').className = tab === 'focus' ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white' : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 hover:text-white';
+  document.getElementById('tab-kanban').className = tab === 'kanban' ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white' : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 hover:text-white';
+  render();
+}
+function addTask() {
+  const title = document.getElementById('newTitle').value.trim();
+  if (!title) return;
+  const projectId = document.getElementById('newProject').value;
+  const aiTool = document.getElementById('newAiTool').value.trim() || 'Gemini / AI';
+  const aiRole = document.getElementById('newAiRole').value.trim() || '輔助開發與自動化處理';
+  state.tasks.unshift({ id: 't_' + Date.now(), projectId, title, status: 'todo', priority: true, aiTool, aiRole, note: '', subtasks: [] });
+  document.getElementById('newTitle').value = '';
+  document.getElementById('newAiTool').value = '';
+  document.getElementById('newAiRole').value = '';
+  save();
+}
+function toggleSubtask(taskId, idx) { const t = state.tasks.find(x => x.id === taskId); if (t && t.subtasks[idx]) { t.subtasks[idx].done = !t.subtasks[idx].done; save(); } }
+function addSubtaskPrompt(taskId) { const text = prompt('輸入要新增嘅 Sub-task 名稱：'); if (!text) return; const t = state.tasks.find(x => x.id === taskId); if (t) { t.subtasks.push({ text, done: false }); save(); } }
+function changeStatus(taskId, newStatus) { const t = state.tasks.find(x => x.id === taskId); if (t) { t.status = newStatus; save(); } }
+
+function renderTaskCard(t) {
+  const proj = state.projects.find(p => p.id === t.projectId) || { name: t.projectId };
+  const subHtml = (t.subtasks || []).map((s, i) => `
+    <label class="flex items-start gap-2 text-xs cursor-pointer py-0.5 ${s.done ? 'line-through text-slate-500' : 'text-slate-200'}">
+      <input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleSubtask('${t.id}',${i})" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-indigo-500">
+      <span>${s.text}</span>
+    </label>
+  `).join('');
+  return `
+    <div class="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl p-4 space-y-3 shadow">
+      <div class="flex items-center justify-between gap-2">
+        <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-800 text-indigo-300">${proj.name}</span>
+        <select onchange="changeStatus('${t.id}', this.value)" class="bg-slate-950 border border-slate-800 text-[11px] rounded px-2 py-0.5 text-slate-300">
+          <option value="todo" ${t.status==='todo'?'selected':''}>📋 To Do</option>
+          <option value="in-progress" ${t.status==='in-progress'?'selected':''}>⚡ In Progress</option>
+          <option value="done" ${t.status==='done'?'selected':''}>✅ Done</option>
+        </select>
+      </div>
+      <h4 class="font-bold text-sm text-white leading-snug">${t.title}</h4>
+      <div class="bg-indigo-950/40 border border-indigo-500/30 rounded-lg p-2.5 text-xs space-y-1">
+        <div class="flex items-center gap-1.5 font-semibold text-indigo-300">
+          <span>🤖 用緊 AI 工具：</span>
+          <span class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-white mono text-[11px]">${t.aiTool || 'AI Tool'}</span>
+        </div>
+        <div class="text-slate-300 text-[11px]">🛠️ <b>做緊乜嘢：</b>${t.aiRole || '-'}</div>
+      </div>
+      ${t.note ? `<div class="text-[11px] text-amber-300/90 bg-amber-950/30 border border-amber-500/20 rounded px-2.5 py-1.5">📌 備忘：${t.note}</div>` : ''}
+      <div class="space-y-1 pt-1 border-t border-slate-800/80">
+        <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+          <span>Sub-tasks (${(t.subtasks\vert{}\vert{}[]).filter(x=>x.done).length}/${(t.subtasks||[]).length})</span>
+          <button onclick="addSubtaskPrompt('${t.id}')" class="text-indigo-400 hover:text-indigo-300">+ 加細項</button>
+        </div>
+        ${subHtml}
+      </div>
+    </div>
+  `;
+}
+
+function render() {
+  const pGrid = document.getElementById('projectGrid');
+  pGrid.innerHTML = state.projects.map(p => `
+    <div onclick="filterProject('${p.id}')" class="cursor-pointer rounded-xl p-4 border transition ${activeProject===p.id ? 'bg-indigo-950/40 border-indigo-500' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'} space-y-2.5">
+      <div class="font-bold text-sm text-white">${p.name}</div>
+      <p class="text-[11px] text-slate-400">${p.desc}</p>
+      <div class="space-y-1.5 pt-2 border-t border-slate-800">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-400">配備 AI 工具與分工：</div>
+        ${p.tools.map(tl => `
+          <div class="bg-slate-950/90 border border-slate-800/90 rounded-lg p-2 text-[11px]">
+            <span class="font-semibold text-emerald-300 mono">${tl.tool}</span>
+            <span class="text-slate-400"> ➔ </span>
+            <span class="text-slate-200">${tl.role}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  const sel = document.getElementById('newProject');
+  if (sel.options.length !== state.projects.length) {
+    sel.innerHTML = state.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  }
+  document.getElementById('filterLabel').innerText = activeProject === 'ALL' ? '顯示全部 4 個 AI Projects' : '已過濾：' + (state.projects.find(p => p.id === activeProject)?.name || '');
+  const filtered = state.tasks.filter(t => activeProject === 'ALL' || t.projectId === activeProject);
+  const container = document.getElementById('viewContainer');
+  if (currentTab === 'focus') {
+    const focusTasks = filtered.filter(t => t.status !== 'done');
+    container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${focusTasks.map(renderTaskCard).join('')}</div>`;
+  } else {
+    const cols = [{ key: 'todo', label: '📋 待處理 (To Do)' }, { key: 'in-progress', label: '⚡ 進行中 (In Progress)' }, { key: 'done', label: '✅ 已完成 (Done)' }];
+    container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">${cols.map(c => `
+      <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-3 space-y-3">
+        <div class="font-bold text-xs text-slate-300 px-1">${c.label}</div>
+        <div class="space-y-3">${filtered.filter(t => t.status === c.key).map(renderTaskCard).join('')}</div>
+      </div>
+    `).join('')}</div>`;
+  }
+}
+
+function openSyncModal() {
+  document.getElementById('gistToken').value = localStorage.getItem('york_gist_token') || '';
+  document.getElementById('gistId').value = localStorage.getItem('york_gist_id') || '';
+  document.getElementById('syncModal').classList.remove('hidden');
+  document.getElementById('syncModal').classList.add('flex');
+}
+function closeSyncModal() {
+  document.getElementById('syncModal').classList.add('hidden');
+  document.getElementById('syncModal').classList.remove('flex');
+}
+async function pushGist() {
+  const token = document.getElementById('gistToken').value.trim();
+  let gistId = document.getElementById('gistId').value.trim();
+  const msg = document.getElementById('syncMsg');
+  if (!token) { msg.innerText = '請先輸入 GitHub Token'; return; }
+  localStorage.setItem('york_gist_token', token);
+  msg.innerText = '正在同步至 GitHub Gist...';
+  const body = { description: 'York AI Projects Dashboard Sync', public: false, files: { 'york_ai_dashboard.json': { content: JSON.stringify(state, null, 2) } } };
+  const url = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
+  const res = await fetch(url, { method: gistId ? 'PATCH' : 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }, body: JSON.stringify(body) });
+  if (res.ok) {
+    const data = await res.json();
+    localStorage.setItem('york_gist_id', data.id);
+    document.getElementById('gistId').value = data.id;
+    msg.innerText = '✅ 已成功 Push 到雲端！Gist ID: ' + data.id;
+  } else { msg.innerText = '❌ Push 失敗，請檢查 Token 權限'; }
+}
+async function pullGist() {
+  const token = document.getElementById('gistToken').value.trim();
+  const gistId = document.getElementById('gistId').value.trim();
+  const msg = document.getElementById('syncMsg');
+  if (!token || !gistId) { msg.innerText = '請輸入 Token 同 Gist ID'; return; }
+  localStorage.setItem('york_gist_token', token);
+  localStorage.setItem('york_gist_id', gistId);
+  msg.innerText = '正在從雲端拉取...';
+  const res = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' } });
+  if (res.ok) {
+    const data = await res.json();
+    const content = data.files['york_ai_dashboard.json']?.content;
+    if (content) { state = JSON.parse(content); save(); msg.innerText = '✅ 已成功從雲端同步最新進度！'; }
+  } else { msg.innerText = '❌ Pull 失敗，請檢查 Gist ID'; }
+}
+render();
+</script>
+</body>
+</html>
