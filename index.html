@@ -143,153 +143,296 @@ const PHASE_NAMES = {
 };
 
 const DEFAULT_DATA = {
-  projects: [
+  "projects": [
     {
-      id: 'yorlio',
-      name: '📈 Yorlio 財富管理',
-      desc: '跨券商資產追蹤、多幣種折算與客觀風險診斷',
-      currentPhase: 2,
-      tools: [
-        { tool: 'Atoms.dev', role: 'SaaS 前端原型與 UI' },
-        { tool: 'Claude MCP', role: '持倉 JSON 與風險診斷' },
-        { tool: 'Cloudflare', role: 'SEO 與 Landing Copy' },
-        { tool: 'Capacitor', role: 'iOS/Android 原生容器' }
+      "id": "yorlio",
+      "name": "📈 Yorlio 財富管理",
+      "desc": "跨券商資產追蹤、多幣種折算與客觀風險診斷",
+      "currentPhase": 2,
+      "tools": [
+        {
+          "tool": "Atoms.dev",
+          "role": "SaaS 前端原型與 UI"
+        },
+        {
+          "tool": "Claude MCP",
+          "role": "持倉 JSON 與風險診斷"
+        },
+        {
+          "tool": "Cloudflare",
+          "role": "SEO 與 Landing Copy"
+        },
+        {
+          "tool": "Capacitor",
+          "role": "iOS/Android 原生容器"
+        }
       ]
     },
     {
-      id: 'growpath',
-      name: '🌱 GrowPath 兒童成長',
-      desc: '結構化問卷 Profile、國際研究框架與精準課程媒合',
-      currentPhase: 2,
-      tools: [
-        { tool: 'Lovable', role: '問卷結構化與 Dashboard MVP' },
-        { tool: 'Gemini API', role: '強項分析與 30 日計劃生成' },
-        { tool: 'Supabase', role: 'Profile 儲存與每週回顧' }
+      "id": "growpath",
+      "name": "🌱 GrowPath 兒童成長",
+      "desc": "結構化問卷 Profile、國際研究框架與精準課程媒合",
+      "currentPhase": 2,
+      "tools": [
+        {
+          "tool": "Lovable",
+          "role": "問卷結構化與 Dashboard MVP"
+        },
+        {
+          "tool": "Gemini API",
+          "role": "強項分析與 30 日計劃生成"
+        },
+        {
+          "tool": "Supabase",
+          "role": "Profile 儲存與每週回顧"
+        }
       ]
     },
     {
-      id: 'halo-kakak',
-      name: '🏠 屋企家務通 (Halo Kakak!)',
-      desc: '香港僱主與印傭雙語家務管理、廣東話轉地道印尼文、TTS 與跨機即時同步',
-      currentPhase: 2,
-      tools: [
-        { tool: 'Atoms.dev / Bolt', role: '雙語模式切換與 Mobile-first 介面' },
-        { tool: 'Gemini API', role: '香港地道廣東話轉禮貌印尼文翻譯' },
-        { tool: 'Web Speech & TTS', role: 'zh-HK 語音輸入與 id-ID 語音朗讀' },
-        { tool: 'Supabase', role: '免登入 Room Code 跨手機雙向即時同步' }
+      "id": "halo-kakak",
+      "name": "🏠 屋企家務通 (Halo Kakak!)",
+      "desc": "香港僱主與印傭雙語家務管理、廣東話轉地道印尼文、TTS 與跨機即時同步",
+      "currentPhase": 2,
+      "tools": [
+        {
+          "tool": "Atoms.dev / Bolt",
+          "role": "雙語模式切換與 Mobile-first 介面"
+        },
+        {
+          "tool": "Gemini API",
+          "role": "香港地道廣東話轉禮貌印尼文翻譯"
+        },
+        {
+          "tool": "Web Speech & TTS",
+          "role": "zh-HK 語音輸入與 id-ID 語音朗讀"
+        },
+        {
+          "tool": "Supabase",
+          "role": "免登入 Room Code 跨手機雙向即時同步"
+        }
       ]
     },
     {
-      id: 'global-price',
-      name: '🛒 全球格價平台',
-      desc: '比較全球電商與香港到手總成本、購買可行性透明化',
-      currentPhase: 1,
-      tools: [
-        { tool: 'Atoms.dev', role: '多來源搜尋與總成本分項介面' },
-        { tool: 'Gemini API', role: '規格對應與購買風險警示' }
+      "id": "global-price",
+      "name": "🛒 全球格價平台",
+      "desc": "比較全球電商與香港到手總成本、購買可行性透明化",
+      "currentPhase": 1,
+      "tools": [
+        {
+          "tool": "Atoms.dev",
+          "role": "多來源搜尋與總成本分項介面"
+        },
+        {
+          "tool": "Gemini API",
+          "role": "規格對應與購買風險警示"
+        }
       ]
     },
     {
-      id: 'ai-youtube',
-      name: '🎬 AI YouTube 工廠',
-      desc: 'AI 視覺流水線、兒童卡通 Shorts 與 Trends 研究',
-      currentPhase: 3,
-      tools: [
-        { tool: 'Google Flow / Kling', role: '角色一致性 Seed 生成' },
-        { tool: 'Runway Gen-3', role: '高質感動態視覺與特效' },
-        { tool: 'Gemini', role: '爆款關鍵字與高留存腳本' }
+      "id": "ai-youtube",
+      "name": "🎬 AI YouTube 工廠",
+      "desc": "AI 視覺流水線、兒童卡通 Shorts 與 Trends 研究",
+      "currentPhase": 3,
+      "tools": [
+        {
+          "tool": "Google Flow / Kling",
+          "role": "角色一致性 Seed 生成"
+        },
+        {
+          "tool": "Runway Gen-3",
+          "role": "高質感動態視覺與特效"
+        },
+        {
+          "tool": "Gemini",
+          "role": "爆款關鍵字與高留存腳本"
+        }
       ]
     }
   ],
-  tasks: [
+  "tasks": [
     {
-      id: 't_kakak_1',
-      projectId: 'halo-kakak',
-      phase: 2,
-      title: '【Halo Kakak】廣東話語音轉地道印尼文與常用家務詞庫實作',
-      status: 'in-progress',
-      note: '針對地道廣東話（買餸、百佳、隔塵網、煲湯）禮貌印尼文輸出',
-      subtasks: [
-        { text: '定義香港地道家務詞彙 Mapping (買餸/百佳/煲湯)', aiTool: 'Gemini API', done: true },
-        { text: '整合 Web Speech API (zh-HK) 與印尼文 TTS (id-ID)', aiTool: 'Web Speech & TTS', done: true },
-        { text: '微調 Gemini 翻譯 Prompt 確保語氣親切有禮 (Tolong...)', aiTool: 'Gemini API', done: false }
+      "id": "t_1792166141242",
+      "projectId": "yorlio",
+      "phase": 2,
+      "title": "Onboard Apple Store",
+      "status": "in-progress",
+      "note": "",
+      "subtasks": [
+        {
+          "text": "落實執行方針",
+          "aiTool": "Grok Bot",
+          "done": false
+        }
       ]
     },
     {
-      id: 't_kakak_2',
-      projectId: 'halo-kakak',
-      phase: 2,
-      title: '【Halo Kakak】免登入 Room Code 與 Supabase 跨手機即時同步',
-      status: 'in-progress',
-      note: '僱主在辦公室手機輸入，姐姐屋企手機即時彈出任務',
-      subtasks: [
-        { text: '建立 Supabase household_sync 資料表 (room_code key)', aiTool: 'Supabase', done: true },
-        { text: '實作「複製姐姐專屬網址」自動鎖定 Room Code 與印尼文視角', aiTool: 'Atoms.dev / Bolt', done: true },
-        { text: '完成姐姐打勾完成（✅）雙向回傳僱主手機時間戳驗證', aiTool: 'Supabase', done: false }
+      "id": "t_kakak_1",
+      "projectId": "halo-kakak",
+      "phase": 2,
+      "title": "【Halo Kakak】廣東話語音轉地道印尼文與常用家務詞庫實作",
+      "status": "in-progress",
+      "note": "針對地道廣東話（買餸、百佳、隔塵網、煲湯）禮貌印尼文輸出",
+      "subtasks": [
+        {
+          "text": "定義香港地道家務詞彙 Mapping (買餸/百佳/煲湯)",
+          "aiTool": "Gemini API",
+          "done": true
+        },
+        {
+          "text": "整合 Web Speech API (zh-HK) 與印尼文 TTS (id-ID)",
+          "aiTool": "Web Speech & TTS",
+          "done": true
+        },
+        {
+          "text": "微調 Gemini 翻譯 Prompt 確保語氣親切有禮 (Tolong...)",
+          "aiTool": "Gemini API",
+          "done": false
+        }
       ]
     },
     {
-      id: 't_yorlio_1',
-      projectId: 'yorlio',
-      phase: 2,
-      title: 'Yorlio 着陸頁重構與跨券商痛點呈現',
-      status: 'in-progress',
-      note: '聚焦香港/亞洲跨境 DIY 投資者痛點',
-      subtasks: [
-        { text: '重構 Hero 主標題與 CTA 階層', aiTool: 'Atoms.dev', done: true },
-        { text: '設計跨券商（BOCHK / 富途）資產整合預覽圖', aiTool: 'Atoms.dev', done: false },
-        { text: '撰寫金融痛點 Copywriting 與免責說明', aiTool: 'Gemini', done: false }
+      "id": "t_kakak_2",
+      "projectId": "halo-kakak",
+      "phase": 2,
+      "title": "【Halo Kakak】免登入 Room Code 與 Supabase 跨手機即時同步",
+      "status": "in-progress",
+      "note": "僱主在辦公室手機輸入，姐姐屋企手機即時彈出任務",
+      "subtasks": [
+        {
+          "text": "建立 Supabase household_sync 資料表 (room_code key)",
+          "aiTool": "Supabase",
+          "done": true
+        },
+        {
+          "text": "實作「複製姐姐專屬網址」自動鎖定 Room Code 與印尼文視角",
+          "aiTool": "Atoms.dev / Bolt",
+          "done": true
+        },
+        {
+          "text": "完成姐姐打勾完成（✅）雙向回傳僱主手機時間戳驗證",
+          "aiTool": "Supabase",
+          "done": false
+        }
       ]
     },
     {
-      id: 't_yorlio_2',
-      projectId: 'yorlio',
-      phase: 2,
-      title: '持倉分析標準化與 Claude MCP 診斷邏輯',
-      status: 'todo',
-      note: '輸出純客觀集中度與派息數據，不作投資承諾',
-      subtasks: [
-        { text: '定義 Portfolio & Holding JSON Schema (多幣種)', aiTool: 'Claude MCP', done: true },
-        { text: '實作高息 ETF (3466/3110) 與 REITs (823) 折算邏輯', aiTool: 'Claude MCP', done: false },
-        { text: '設計 CSV 匯入欄位對應與容錯提示', aiTool: 'Gemini', done: false }
+      "id": "t_yorlio_1",
+      "projectId": "yorlio",
+      "phase": 2,
+      "title": "Yorlio 着陸頁重構與跨券商痛點呈現",
+      "status": "in-progress",
+      "note": "聚焦香港/亞洲跨境 DIY 投資者痛點",
+      "subtasks": [
+        {
+          "text": "重構 Hero 主標題與 CTA 階層",
+          "aiTool": "Atoms.dev",
+          "done": true
+        },
+        {
+          "text": "設計跨券商（BOCHK / 富途）資產整合預覽圖",
+          "aiTool": "Atoms.dev",
+          "done": false
+        },
+        {
+          "text": "撰寫金融痛點 Copywriting 與免責說明",
+          "aiTool": "Gemini",
+          "done": false
+        }
       ]
     },
     {
-      id: 't_growpath_1',
-      projectId: 'growpath',
-      phase: 2,
-      title: '結構化兒童 Profile 問卷與個人化儀表板',
-      status: 'in-progress',
-      note: '核心邏輯：先理解孩子，再協助選擇活動',
-      subtasks: [
-        { text: '建立 8-12 分鐘結構化問卷原型 (Dropdown/單選)', aiTool: 'Lovable', done: true },
-        { text: '整合國際發展研究框架，輸出強項摘要 Prompt', aiTool: 'Gemini API', done: false },
-        { text: '實作 30 日家庭成長計劃個人化 Dashboard', aiTool: 'Lovable', done: false }
+      "id": "t_yorlio_2",
+      "projectId": "yorlio",
+      "phase": 2,
+      "title": "持倉分析標準化與 Claude MCP 診斷邏輯",
+      "status": "todo",
+      "note": "輸出純客觀集中度與派息數據，不作投資承諾",
+      "subtasks": [
+        {
+          "text": "定義 Portfolio & Holding JSON Schema (多幣種)",
+          "aiTool": "Claude MCP",
+          "done": true
+        },
+        {
+          "text": "實作高息 ETF (3466/3110) 與 REITs (823) 折算邏輯",
+          "aiTool": "Claude MCP",
+          "done": false
+        },
+        {
+          "text": "設計 CSV 匯入欄位對應與容錯提示",
+          "aiTool": "Gemini",
+          "done": false
+        }
       ]
     },
     {
-      id: 't_price_1',
-      projectId: 'global-price',
-      phase: 1,
-      title: '全球格價平台 MVP 總成本計算引擎與垂直品類定義',
-      status: 'todo',
-      note: '主打「到手總成本 + 購買可行性」',
-      subtasks: [
-        { text: '定義商品型號、地區版本與規格匹配欄位', aiTool: 'Atoms.dev', done: true },
-        { text: '串接國際運費、匯率與到手總成本估算邏輯', aiTool: 'Gemini API', done: false }
+      "id": "t_growpath_1",
+      "projectId": "growpath",
+      "phase": 2,
+      "title": "結構化兒童 Profile 問卷與個人化儀表板",
+      "status": "in-progress",
+      "note": "核心邏輯：先理解孩子，再協助選擇活動",
+      "subtasks": [
+        {
+          "text": "建立 8-12 分鐘結構化問卷原型 (Dropdown/單選)",
+          "aiTool": "Lovable",
+          "done": true
+        },
+        {
+          "text": "整合國際發展研究框架，輸出強項摘要 Prompt",
+          "aiTool": "Gemini API",
+          "done": false
+        },
+        {
+          "text": "實作 30 日家庭成長計劃個人化 Dashboard",
+          "aiTool": "Lovable",
+          "done": false
+        }
       ]
     },
     {
-      id: 't_yt_1',
-      projectId: 'ai-youtube',
-      phase: 3,
-      title: '自動化 YouTube Shorts 視覺與腳本流水線實測',
-      status: 'in-progress',
-      note: '針對演算法優化高留存率與完播率',
-      subtasks: [
-        { text: '固定角色 Seed Prompt 與分鏡模板建立', aiTool: 'Google Flow + Kling', done: true },
-        { text: '結合 Google Trends 挖掘爆款關鍵字與標題公式', aiTool: 'Gemini', done: true },
-        { text: '批量生成 3 條高質感兒童卡通 Shorts 測試', aiTool: 'Runway Gen-3', done: false }
+      "id": "t_price_1",
+      "projectId": "global-price",
+      "phase": 1,
+      "title": "全球格價平台 MVP 總成本計算引擎與垂直品類定義",
+      "status": "todo",
+      "note": "主打「到手總成本 + 購買可行性」",
+      "subtasks": [
+        {
+          "text": "定義商品型號、地區版本與規格匹配欄位",
+          "aiTool": "Atoms.dev",
+          "done": true
+        },
+        {
+          "text": "串接國際運費、匯率與到手總成本估算邏輯",
+          "aiTool": "Gemini API",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "t_yt_1",
+      "projectId": "ai-youtube",
+      "phase": 3,
+      "title": "自動化 YouTube Shorts 視覺與腳本流水線實測",
+      "status": "in-progress",
+      "note": "針對演算法優化高留存率與完播率",
+      "subtasks": [
+        {
+          "text": "固定角色 Seed Prompt 與分鏡模板建立",
+          "aiTool": "Google Flow + Kling",
+          "done": true
+        },
+        {
+          "text": "結合 Google Trends 挖掘爆款關鍵字與標題公式",
+          "aiTool": "Gemini",
+          "done": true
+        },
+        {
+          "text": "批量生成 3 條高質感兒童卡通 Shorts 測試",
+          "aiTool": "Runway Gen-3",
+          "done": false
+        }
       ]
     }
   ]
