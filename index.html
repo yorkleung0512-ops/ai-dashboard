@@ -15,13 +15,13 @@
     body { font-family: 'Inter', 'Noto Sans TC', sans-serif; transition: background-color 0.2s, color 0.2s; }
     .mono { font-family: 'JetBrains Mono', monospace; }
     
-    /* 深色主題卡片 */
+    /* 深色主題 */
     html.dark body { background: #070b12; color: #f1f5f9; }
     html.dark .panze-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
     html.dark .panze-card:hover { border-color: rgba(99, 102, 241, 0.6); }
     html.dark .panze-inner { background: rgba(2, 6, 23, 0.6); border-color: rgba(30, 41, 59, 0.8); }
 
-    /* 淺色/白色主題卡片 */
+    /* 淺色/白色主題 */
     html:not(.dark) body { background: #f8fafc; color: #0f172a; }
     html:not(.dark) .panze-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
     html:not(.dark) .panze-card:hover { border-color: #6366f1; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.1); }
@@ -36,7 +36,7 @@
         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-bold text-white shadow-md shadow-indigo-500/20">⚡</div>
         <div>
           <h1 class="font-bold text-sm tracking-wide text-slate-900 dark:text-white">PANZE STUDIO // AI COMMAND CENTER</h1>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">Single Source of Truth · 多欄卡片控制台與自動同步</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Single Source of Truth · 里程碑追蹤與自動同步</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -89,16 +89,16 @@
   </div>
 
   <main class="max-w-7xl w-full mx-auto px-5 py-6 space-y-7 flex-1">
-    <!-- 1. Panze Studio 多欄專案卡片佈局 -->
+    <!-- 1. 專案卡片矩陣與四階段里程碑進度 (現已擴展至五大專案) -->
     <section>
       <div class="flex items-center justify-between mb-3.5">
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-          <h2 class="text-xs font-bold text-slate-700 dark:text-slate-300 tracking-wider uppercase">Active Projects & Toolchain Matrix</h2>
+          <h2 class="text-xs font-bold text-slate-700 dark:text-slate-300 tracking-wider uppercase">Active Projects & Phase Tracker (5 Projects)</h2>
         </div>
-        <span class="text-xs text-slate-400">點擊卡片切換過濾視角</span>
+        <span class="text-xs text-slate-400">點擊卡片可切換篩選單一專案</span>
       </div>
-      <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+      <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4"></div>
     </section>
 
     <!-- 2. 快速建立任務列 -->
@@ -106,17 +106,23 @@
       <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5">
         <input id="newTitle" type="text" placeholder="+ 輸入新 Task 標題..." class="md:col-span-4 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-indigo-500 focus:outline-none">
         <select id="newProject" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-800 dark:text-slate-200"></select>
-        <input id="newAiTool" type="text" placeholder="🤖 負責 AI (如 Claude MCP)" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-600 dark:text-indigo-300">
-        <input id="newAiRole" type="text" placeholder="🛠️ 具體分工..." class="md:col-span-3 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-slate-300">
-        <button id="btnAddTask" type="button" class="md:col-span-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg px-3 py-2 text-xs cursor-pointer shadow">新增</button>
+        <select id="newPhase" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-800 dark:text-slate-200">
+          <option value="1">Phase 1: 需求釐清</option>
+          <option value="2" selected>Phase 2: MVP 原型</option>
+          <option value="3">Phase 3: 實測反饋</option>
+          <option value="4">Phase 4: 變現驗證</option>
+        </select>
+        <input id="newAiTool" type="text" placeholder="🤖 負責 AI (如 Gemini API / Supabase)" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-600 dark:text-indigo-300">
+        <button id="btnAddTask" type="button" class="md:col-span-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg px-3 py-2 text-xs cursor-pointer shadow">新增任務</button>
       </div>
     </section>
 
-    <!-- 3. 看板控制視角 -->
+    <!-- 3. 看板控制視角 (焦點 / 看板 / 路線圖) -->
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800/80 pb-3">
       <div class="flex items-center gap-2">
         <button id="tabFocus" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm">🔥 焦點任務 (In Progress)</button>
         <button id="tabKanban" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">🎛️ 完整看板 (Kanban)</button>
+        <button id="tabRoadmap" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">🚀 階段路線圖 (Roadmap)</button>
       </div>
       <div class="flex items-center gap-2">
         <span id="filterLabel" class="text-xs text-slate-500 dark:text-slate-400">顯示全部 Projects</span>
@@ -129,12 +135,20 @@
   </main>
 
 <script>
+const PHASE_NAMES = {
+  1: 'Phase 1: 需求釐清',
+  2: 'Phase 2: MVP 原型',
+  3: 'Phase 3: 實測反饋',
+  4: 'Phase 4: 變現驗證'
+};
+
 const DEFAULT_DATA = {
   projects: [
     {
       id: 'yorlio',
       name: '📈 Yorlio 財富管理',
       desc: '跨券商資產追蹤、多幣種折算與客觀風險診斷',
+      currentPhase: 2,
       tools: [
         { tool: 'Atoms.dev', role: 'SaaS 前端原型與 UI' },
         { tool: 'Claude MCP', role: '持倉 JSON 與風險診斷' },
@@ -146,6 +160,7 @@ const DEFAULT_DATA = {
       id: 'growpath',
       name: '🌱 GrowPath 兒童成長',
       desc: '結構化問卷 Profile、國際研究框架與精準課程媒合',
+      currentPhase: 2,
       tools: [
         { tool: 'Lovable', role: '問卷結構化與 Dashboard MVP' },
         { tool: 'Gemini API', role: '強項分析與 30 日計劃生成' },
@@ -153,9 +168,22 @@ const DEFAULT_DATA = {
       ]
     },
     {
+      id: 'halo-kakak',
+      name: '🏠 屋企家務通 (Halo Kakak!)',
+      desc: '香港僱主與印傭雙語家務管理、廣東話轉地道印尼文、TTS 與跨機即時同步',
+      currentPhase: 2,
+      tools: [
+        { tool: 'Atoms.dev / Bolt', role: '雙語模式切換與 Mobile-first 介面' },
+        { tool: 'Gemini API', role: '香港地道廣東話轉禮貌印尼文翻譯' },
+        { tool: 'Web Speech & TTS', role: 'zh-HK 語音輸入與 id-ID 語音朗讀' },
+        { tool: 'Supabase', role: '免登入 Room Code 跨手機雙向即時同步' }
+      ]
+    },
+    {
       id: 'global-price',
       name: '🛒 全球格價平台',
       desc: '比較全球電商與香港到手總成本、購買可行性透明化',
+      currentPhase: 1,
       tools: [
         { tool: 'Atoms.dev', role: '多來源搜尋與總成本分項介面' },
         { tool: 'Gemini API', role: '規格對應與購買風險警示' }
@@ -165,6 +193,7 @@ const DEFAULT_DATA = {
       id: 'ai-youtube',
       name: '🎬 AI YouTube 工廠',
       desc: 'AI 視覺流水線、兒童卡通 Shorts 與 Trends 研究',
+      currentPhase: 3,
       tools: [
         { tool: 'Google Flow / Kling', role: '角色一致性 Seed 生成' },
         { tool: 'Runway Gen-3', role: '高質感動態視覺與特效' },
@@ -174,8 +203,35 @@ const DEFAULT_DATA = {
   ],
   tasks: [
     {
+      id: 't_kakak_1',
+      projectId: 'halo-kakak',
+      phase: 2,
+      title: '【Halo Kakak】廣東話語音轉地道印尼文與常用家務詞庫實作',
+      status: 'in-progress',
+      note: '針對地道廣東話（買餸、百佳、隔塵網、煲湯）禮貌印尼文輸出',
+      subtasks: [
+        { text: '定義香港地道家務詞彙 Mapping (買餸/百佳/煲湯)', aiTool: 'Gemini API', done: true },
+        { text: '整合 Web Speech API (zh-HK) 與印尼文 TTS (id-ID)', aiTool: 'Web Speech & TTS', done: true },
+        { text: '微調 Gemini 翻譯 Prompt 確保語氣親切有禮 (Tolong...)', aiTool: 'Gemini API', done: false }
+      ]
+    },
+    {
+      id: 't_kakak_2',
+      projectId: 'halo-kakak',
+      phase: 2,
+      title: '【Halo Kakak】免登入 Room Code 與 Supabase 跨手機即時同步',
+      status: 'in-progress',
+      note: '僱主在辦公室手機輸入，姐姐屋企手機即時彈出任務',
+      subtasks: [
+        { text: '建立 Supabase household_sync 資料表 (room_code key)', aiTool: 'Supabase', done: true },
+        { text: '實作「複製姐姐專屬網址」自動鎖定 Room Code 與印尼文視角', aiTool: 'Atoms.dev / Bolt', done: true },
+        { text: '完成姐姐打勾完成（✅）雙向回傳僱主手機時間戳驗證', aiTool: 'Supabase', done: false }
+      ]
+    },
+    {
       id: 't_yorlio_1',
       projectId: 'yorlio',
+      phase: 2,
       title: 'Yorlio 着陸頁重構與跨券商痛點呈現',
       status: 'in-progress',
       note: '聚焦香港/亞洲跨境 DIY 投資者痛點',
@@ -188,6 +244,7 @@ const DEFAULT_DATA = {
     {
       id: 't_yorlio_2',
       projectId: 'yorlio',
+      phase: 2,
       title: '持倉分析標準化與 Claude MCP 診斷邏輯',
       status: 'todo',
       note: '輸出純客觀集中度與派息數據，不作投資承諾',
@@ -200,6 +257,7 @@ const DEFAULT_DATA = {
     {
       id: 't_growpath_1',
       projectId: 'growpath',
+      phase: 2,
       title: '結構化兒童 Profile 問卷與個人化儀表板',
       status: 'in-progress',
       note: '核心邏輯：先理解孩子，再協助選擇活動',
@@ -212,7 +270,8 @@ const DEFAULT_DATA = {
     {
       id: 't_price_1',
       projectId: 'global-price',
-      title: '全球格價平台 MVP 總成本計算引擎',
+      phase: 1,
+      title: '全球格價平台 MVP 總成本計算引擎與垂直品類定義',
       status: 'todo',
       note: '主打「到手總成本 + 購買可行性」',
       subtasks: [
@@ -223,7 +282,8 @@ const DEFAULT_DATA = {
     {
       id: 't_yt_1',
       projectId: 'ai-youtube',
-      title: '自動化 YouTube Shorts 視覺與腳本流水線',
+      phase: 3,
+      title: '自動化 YouTube Shorts 視覺與腳本流水線實測',
       status: 'in-progress',
       note: '針對演算法優化高留存率與完播率',
       subtasks: [
@@ -237,7 +297,7 @@ const DEFAULT_DATA = {
 
 let state = DEFAULT_DATA;
 try {
-  const local = localStorage.getItem('york_ai_dash_v16');
+  const local = localStorage.getItem('york_ai_dash_v18');
   if (local) state = JSON.parse(local);
 } catch (e) {
   state = DEFAULT_DATA;
@@ -257,7 +317,6 @@ try {
 let currentTab = 'focus';
 let activeProject = 'ALL';
 
-// 主題切換邏輯
 function initTheme() {
   const savedTheme = localStorage.getItem('york_theme') || 'dark';
   applyTheme(savedTheme);
@@ -285,7 +344,7 @@ function toggleTheme() {
 }
 
 function save() {
-  localStorage.setItem('york_ai_dash_v16', JSON.stringify(state));
+  localStorage.setItem('york_ai_dash_v18', JSON.stringify(state));
   render();
   if (ghConfig.token) {
     pushToGitHub(false);
@@ -375,7 +434,6 @@ async function pushToGitHub(showAlert = false) {
   }
 }
 
-// Modal 控制
 function openModal() {
   const modal = document.getElementById('ghModal');
   if (modal) {
@@ -394,12 +452,16 @@ function closeModal() {
 function filterProject(id) { activeProject = id; render(); }
 function setTab(tab) {
   currentTab = tab;
-  const f = document.getElementById('tabFocus');
-  const k = document.getElementById('tabKanban');
-  if (f && k) {
-    f.className = tab === 'focus' ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm' : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer';
-    k.className = tab === 'kanban' ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm' : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer';
-  }
+  ['tabFocus', 'tabKanban', 'tabRoadmap'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const active = (tab === 'focus' && id === 'tabFocus') ||
+                   (tab === 'kanban' && id === 'tabKanban') ||
+                   (tab === 'roadmap' && id === 'tabRoadmap');
+    el.className = active
+      ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm'
+      : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer';
+  });
   render();
 }
 
@@ -414,10 +476,15 @@ function changeStatus(taskId, s) {
   const t = state.tasks.find(x => x.id === taskId);
   if (t) { t.status = s; save(); }
 }
+function changePhase(taskId, p) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (t) { t.phase = parseInt(p); save(); }
+}
+
 function addSubtask(taskId) {
   const text = prompt('輸入 Sub-task 名稱：');
   if (!text) return;
-  const aiTool = prompt('負責 AI 工具：', 'Gemini') || 'AI';
+  const aiTool = prompt('負責 AI 工具：', 'Gemini API') || 'AI';
   const t = state.tasks.find(x => x.id === taskId);
   if (t) {
     t.subtasks.push({ text, aiTool, done: false });
@@ -452,7 +519,15 @@ function renderTaskCard(t) {
   return `
     <div class="panze-card rounded-xl p-4 space-y-3.5 transition">
       <div class="flex items-center justify-between gap-2">
-        <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950/80 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-800">${proj.name}</span>
+        <div class="flex items-center gap-1.5">
+          <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950/80 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-800">${proj.name}</span>
+          <select onchange="changePhase('${t.id}', this.value)" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[10px] rounded px-1.5 py-0.5 text-slate-600 dark:text-slate-400">
+            <option value="1" ${t.phase===1?'selected':''}>P1 需求</option>
+            <option value="2" ${t.phase===2?'selected':''}>P2 MVP</option>
+            <option value="3" ${t.phase===3?'selected':''}>P3 實測</option>
+            <option value="4" ${t.phase===4?'selected':''}>P4 變現</option>
+          </select>
+        </div>
         <select onchange="changeStatus('${t.id}', this.value)" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[11px] rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">
           <option value="todo" ${t.status==='todo'?'selected':''}>📋 To Do</option>
           <option value="in-progress" ${t.status==='in-progress'?'selected':''}>⚡ In Progress</option>
@@ -478,16 +553,25 @@ function render() {
     pGrid.innerHTML = state.projects.map(p => {
       const pct = getProjectProgress(p.id);
       const isSelected = activeProject === p.id;
+      const curPhase = p.currentPhase || 1;
       return `
         <div onclick="filterProject('${p.id}')" class="panze-card cursor-pointer rounded-xl p-4 transition relative flex flex-col justify-between ${isSelected ? 'border-indigo-500 ring-2 ring-indigo-500/30 bg-indigo-50/50 dark:bg-indigo-950/20' : ''}">
-          <div class="space-y-2">
+          <div class="space-y-2.5">
             <div class="flex items-center justify-between">
               <span class="font-bold text-sm text-slate-900 dark:text-white">${p.name}</span>
               <span class="text-[11px] mono font-semibold text-indigo-600 dark:text-indigo-400">${pct}%</span>
             </div>
-            <!-- 進度條 -->
-            <div class="w-full bg-slate-100 dark:bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
-              <div class="bg-gradient-to-r from-indigo-500 to-violet-500 h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+            <!-- 四階段里程碑視覺指示器 -->
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                <span>目前階段</span>
+                <span class="text-indigo-600 dark:text-indigo-400 font-bold">${PHASE_NAMES[curPhase]}</span>
+              </div>
+              <div class="grid grid-cols-4 gap-1">
+                ${[1, 2, 3, 4].map(idx => `
+                  <div class="h-1.5 rounded-full ${idx <= curPhase ? 'bg-indigo-500' : 'bg-slate-200 dark:bg-slate-800'} transition-colors"></div>
+                `).join('')}
+              </div>
             </div>
             <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">${p.desc}</p>
           </div>
@@ -513,7 +597,7 @@ function render() {
   }
 
   const fLabel = document.getElementById('filterLabel');
-  if (fLabel) fLabel.innerText = activeProject === 'ALL' ? '顯示全部 Projects' : '已過濾專案';
+  if (fLabel) fLabel.innerText = activeProject === 'ALL' ? '顯示全部 Projects (5)' : '已過濾專案';
 
   const filtered = state.tasks.filter(t => activeProject === 'ALL' || t.projectId === activeProject);
   const container = document.getElementById('viewContainer');
@@ -522,7 +606,7 @@ function render() {
   if (currentTab === 'focus') {
     const focusTasks = filtered.filter(t => t.status !== 'done');
     container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${focusTasks.map(renderTaskCard).join('')}</div>`;
-  } else {
+  } else if (currentTab === 'kanban') {
     const cols = [{ key: 'todo', label: '📋 To Do' }, { key: 'in-progress', label: '⚡ In Progress' }, { key: 'done', label: '✅ Done' }];
     container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">${cols.map(c => `
       <div class="panze-card rounded-xl p-3.5 space-y-3">
@@ -533,10 +617,40 @@ function render() {
         <div class="space-y-3">${filtered.filter(t => t.status === c.key).map(renderTaskCard).join('')}</div>
       </div>
     `).join('')}</div>`;
+  } else if (currentTab === 'roadmap') {
+    const phases = [
+      { id: 1, name: 'Phase 1: 需求釐清 & 規格定義', desc: '釐清核心用戶價值主張與資料模型' },
+      { id: 2, name: 'Phase 2: MVP 原型建置', desc: '使用 AI 工具快速完成可走通之 Demo' },
+      { id: 3, name: 'Phase 3: 實測反饋 & 優化', desc: '收集反饋、修復登入與資料計算盲點' },
+      { id: 4, name: 'Phase 4: 變現機制驗證', desc: '上線付費方案、流量獲客與跨通路轉化' }
+    ];
+
+    container.innerHTML = `
+      <div class="space-y-6">
+        ${phases.map(ph => {
+          const phTasks = filtered.filter(t => (t.phase || 2) === ph.id);
+          return `
+            <div class="panze-card rounded-xl p-4 space-y-3 border-l-4 ${ph.id === 2 ? 'border-l-indigo-500' : 'border-l-slate-400'}">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800/80 pb-2">
+                <div>
+                  <h3 class="font-bold text-sm text-slate-900 dark:text-white">${ph.name}</h3>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400">${ph.desc}</p>
+                </div>
+                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300">
+                  ${phTasks.length} 個任務
+                </span>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                ${phTasks.length > 0 ? phTasks.map(renderTaskCard).join('') : '<div class="text-xs text-slate-400 italic py-2 col-span-full">此階段目前尚無任務</div>'}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
   }
 }
 
-// 頁面加載完成後綁定事件
 window.addEventListener('load', () => {
   initTheme();
   document.getElementById('btnThemeToggle').onclick = toggleTheme;
@@ -562,11 +676,12 @@ window.addEventListener('load', () => {
     const title = document.getElementById('newTitle').value.trim();
     if (!title) return;
     const projectId = document.getElementById('newProject').value;
-    const aiTool = document.getElementById('newAiTool').value.trim() || 'Gemini';
-    const aiRole = document.getElementById('newAiRole').value.trim() || '輔助開發';
+    const phase = parseInt(document.getElementById('newPhase').value) || 2;
+    const aiTool = document.getElementById('newAiTool').value.trim() || 'Gemini API';
     state.tasks.unshift({
       id: 't_' + Date.now(),
       projectId,
+      phase,
       title,
       status: 'in-progress',
       note: '',
@@ -574,12 +689,12 @@ window.addEventListener('load', () => {
     });
     document.getElementById('newTitle').value = '';
     document.getElementById('newAiTool').value = '';
-    document.getElementById('newAiRole').value = '';
     save();
   };
 
   document.getElementById('tabFocus').onclick = () => setTab('focus');
   document.getElementById('tabKanban').onclick = () => setTab('kanban');
+  document.getElementById('tabRoadmap').onclick = () => setTab('roadmap');
   document.getElementById('btnResetFilter').onclick = () => filterProject('ALL');
 
   render();
