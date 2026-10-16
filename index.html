@@ -95,4 +95,396 @@
       </div>
       <div class="flex items-center gap-2">
         <span id="filterLabel" class="text-xs text-slate-400">顯示全部 Projects</span>
-        <button id="btnResetFilter" type="button" class="text-xs px-2.5 py-1 rounded
+        <button id="btnResetFilter" type="button" class="text-xs px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">顯示全部</button>
+      </div>
+    </div>
+
+    <!-- 4. 任務內容區 -->
+    <div id="viewContainer"></div>
+  </main>
+
+<script>
+// 初始預設數據
+const DEFAULT_DATA = {
+  projects: [
+    {
+      id: 'yorlio',
+      name: '📈 Yorlio 財富管理平台',
+      desc: '跨券商資產追蹤、多幣種即時折算與客觀風險診斷',
+      tools: [
+        { tool: 'Atoms.dev / Base44', role: 'SaaS 前端原型與響應式 UI' },
+        { tool: 'Claude / ChatGPT MCP', role: '持倉 JSON 標準化與風險診斷 Agent' },
+        { tool: 'Cloudflare / Gemini', role: 'SEO 結構化標記與金融痛點文案' },
+        { tool: 'Capacitor / TWA', role: 'Android (AAB) / iOS 原生容器' }
+      ]
+    },
+    {
+      id: 'growpath',
+      name: '🌱 GrowPath 兒童成長與課程決策',
+      desc: '結構化問卷 Profile、國際研究框架與活動精準媒合',
+      tools: [
+        { tool: 'Lovable / Vibe Coding', role: '結構化問卷與個人化 Dashboard MVP' },
+        { tool: 'Gemini API', role: '兒童強項分析與 30 日成長計劃' },
+        { tool: 'Supabase', role: '儲存問卷 Profile 與每週回顧記錄' }
+      ]
+    },
+    {
+      id: 'global-price',
+      name: '🛒 全球格價平台 (香港客戶)',
+      desc: '比較全球電商與香港到手總成本、運費關稅透明化',
+      tools: [
+        { tool: 'Atoms.dev / Lovable', role: '多來源搜尋與總成本分項介面' },
+        { tool: 'Gemini API', role: '規格對應、匯率換算與購買風險警示' }
+      ]
+    },
+    {
+      id: 'ai-youtube',
+      name: '🎬 AI YouTube 自動化媒體工廠',
+      desc: 'AI 視覺流水線、兒童卡通、Viral Shorts 與 Google Trends',
+      tools: [
+        { tool: 'Google Flow / Kling AI', role: '固定角色一致性 Seed 生成分鏡' },
+        { tool: 'Runway Gen-3 / Luma', role: '高質感動態視覺與特效生成' },
+        { tool: 'Gemini + Trends', role: '爆款關鍵字挖掘與高留存腳本' }
+      ]
+    }
+  ],
+  tasks: [
+    {
+      id: 't_yorlio_1',
+      projectId: 'yorlio',
+      title: 'Yorlio 着陸頁重構與跨券商痛點呈現',
+      status: 'in-progress',
+      note: '聚焦香港/亞洲跨境 DIY 投資者痛點',
+      subtasks: [
+        { text: '重構 Hero 主標題與 CTA 階層', aiTool: 'Atoms.dev', done: true },
+        { text: '設計跨券商（BOCHK / 富途）資產整合預覽圖', aiTool: 'Atoms.dev', done: false },
+        { text: '撰寫金融痛點 Copywriting 與免責說明', aiTool: 'Gemini', done: false }
+      ]
+    },
+    {
+      id: 't_yorlio_2',
+      projectId: 'yorlio',
+      title: '持倉分析標準化與 Claude MCP 診斷邏輯',
+      status: 'todo',
+      note: '輸出純客觀集中度與派息數據，不作投資承諾',
+      subtasks: [
+        { text: '定義 Portfolio & Holding JSON Schema (多幣種)', aiTool: 'Claude MCP', done: true },
+        { text: '實作高息 ETF (3466/3110) 與 REITs (823) 折算邏輯', aiTool: 'Claude MCP', done: false },
+        { text: '設計 CSV 匯入欄位對應與容錯提示', aiTool: 'Gemini', done: false }
+      ]
+    },
+    {
+      id: 't_growpath_1',
+      projectId: 'growpath',
+      title: '結構化兒童 Profile 問卷與個人化儀表板',
+      status: 'in-progress',
+      note: '核心邏輯：先理解孩子，再協助選擇活動',
+      subtasks: [
+        { text: '建立 8-12 分鐘結構化問卷原型 (Dropdown/單選)', aiTool: 'Lovable', done: true },
+        { text: '整合國際發展研究框架，輸出強項摘要 Prompt', aiTool: 'Gemini API', done: false },
+        { text: '實作 30 日家庭成長計劃個人化 Dashboard', aiTool: 'Lovable', done: false }
+      ]
+    },
+    {
+      id: 't_price_1',
+      projectId: 'global-price',
+      title: '全球格價平台 MVP 總成本計算引擎',
+      status: 'todo',
+      note: '主打「到手總成本 + 購買可行性」',
+      subtasks: [
+        { text: '定義商品型號、地區版本與規格匹配欄位', aiTool: 'Atoms.dev', done: true },
+        { text: '串接國際運費、匯率與到手總成本估算邏輯', aiTool: 'Gemini API', done: false }
+      ]
+    },
+    {
+      id: 't_yt_1',
+      projectId: 'ai-youtube',
+      title: '自動化 YouTube Shorts 視覺與腳本流水線',
+      status: 'in-progress',
+      note: '針對演算法優化高留存率與完播率',
+      subtasks: [
+        { text: '固定角色 Seed Prompt 與分鏡模板建立', aiTool: 'Google Flow + Kling', done: true },
+        { text: '結合 Google Trends 挖掘爆款關鍵字與標題公式', aiTool: 'Gemini', done: true },
+        { text: '批量生成 3 條高質感兒童卡通 Shorts 測試', aiTool: 'Runway Gen-3', done: false }
+      ]
+    }
+  ]
+};
+
+let state = DEFAULT_DATA;
+try {
+  const local = localStorage.getItem('york_ai_dash_v13');
+  if (local) state = JSON.parse(local);
+} catch (e) {
+  state = DEFAULT_DATA;
+}
+
+let ghConfig = {
+  owner: 'yorkleung0512-ops',
+  repo: 'ai-dashboard',
+  branch: 'main',
+  token: ''
+};
+try {
+  const localGh = localStorage.getItem('york_gh_config_v2');
+  if (localGh) ghConfig = JSON.parse(localGh);
+} catch (e) {}
+
+let currentTab = 'focus';
+let activeProject = 'ALL';
+
+function save() {
+  localStorage.setItem('york_ai_dash_v13', JSON.stringify(state));
+  render();
+  if (ghConfig.token) {
+    pushToGitHub(false);
+  }
+}
+
+function updateSyncUI(status, msg) {
+  const el = document.getElementById('syncStatus');
+  if (!el) return;
+  if (status === 'synced') {
+    el.className = 'text-[11px] px-2.5 py-1 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-500/30';
+    el.innerText = '✅ GitHub 已同步';
+  } else if (status === 'syncing') {
+    el.className = 'text-[11px] px-2.5 py-1 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-500/30 animate-pulse';
+    el.innerText = '🔄 推送中...';
+  } else if (status === 'error') {
+    el.className = 'text-[11px] px-2.5 py-1 rounded bg-rose-950/80 text-rose-300 border border-rose-500/30';
+    el.innerText = '⚠️ 同步失敗: ' + (msg || '');
+  } else {
+    el.className = 'text-[11px] px-2.5 py-1 rounded bg-slate-800 text-slate-400 border border-slate-700';
+    el.innerText = ghConfig.token ? '⚡ 已配置 Token' : '⚠️ 未配置 Token (僅本機)';
+  }
+}
+
+async function pushToGitHub(showAlert = false) {
+  if (!ghConfig.token) {
+    if (showAlert) openModal();
+    return;
+  }
+  updateSyncUI('syncing');
+
+  try {
+    const url = `https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}/contents/index.html`;
+    const headers = {
+      'Authorization': `Bearer ${ghConfig.token}`,
+      'Accept': 'application/vnd.github.v3+json'
+    };
+
+    const getRes = await fetch(url + `?ref=${ghConfig.branch}`, { headers });
+    const currentSha = getRes.ok ? (await getRes.json()).sha : null;
+
+    let currentHtml = document.documentElement.outerHTML;
+    const utf8Bytes = new TextEncoder().encode("<!DOCTYPE html>\n" + currentHtml);
+    let binary = '';
+    utf8Bytes.forEach(b => binary += String.fromCharCode(b));
+    const base64Content = btoa(binary);
+
+    const body = {
+      message: 'Auto-sync from Dashboard UI: ' + new Date().toLocaleString(),
+      content: base64Content,
+      branch: ghConfig.branch
+    };
+    if (currentSha) body.sha = currentSha;
+
+    const putRes = await fetch(url, { method: 'PUT', headers, body: JSON.stringify(body) });
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message || '寫入失敗');
+    }
+
+    updateSyncUI('synced');
+    if (showAlert) alert('已成功推送至 GitHub！');
+  } catch (err) {
+    updateSyncUI('error', err.message);
+    if (showAlert) alert('同步失敗: ' + err.message);
+  }
+}
+
+// Modal 控制
+function openModal() {
+  const modal = document.getElementById('ghModal');
+  if (modal) {
+    document.getElementById('ghOwner').value = ghConfig.owner || 'yorkleung0512-ops';
+    document.getElementById('ghRepo').value = ghConfig.repo || 'ai-dashboard';
+    document.getElementById('ghBranch').value = ghConfig.branch || 'main';
+    document.getElementById('ghToken').value = ghConfig.token || '';
+    modal.style.display = 'flex';
+  }
+}
+function closeModal() {
+  const modal = document.getElementById('ghModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function filterProject(id) { activeProject = id; render(); }
+function setTab(tab) {
+  currentTab = tab;
+  const f = document.getElementById('tabFocus');
+  const k = document.getElementById('tabKanban');
+  if (f && k) {
+    f.className = tab === 'focus' ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer' : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 hover:text-white cursor-pointer';
+    k.className = tab === 'kanban' ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer' : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 hover:text-white cursor-pointer';
+  }
+  render();
+}
+
+function toggleSubtask(taskId, idx) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (t && t.subtasks[idx]) {
+    t.subtasks[idx].done = !t.subtasks[idx].done;
+    save();
+  }
+}
+function changeStatus(taskId, s) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (t) { t.status = s; save(); }
+}
+function addSubtask(taskId) {
+  const text = prompt('輸入 Sub-task 名稱：');
+  if (!text) return;
+  const aiTool = prompt('負責 AI 工具：', 'Gemini') || 'AI';
+  const t = state.tasks.find(x => x.id === taskId);
+  if (t) {
+    t.subtasks.push({ text, aiTool, done: false });
+    save();
+  }
+}
+
+function renderTaskCard(t) {
+  const proj = state.projects.find(p => p.id === t.projectId) || { name: t.projectId };
+  const subHtml = (t.subtasks || []).map((s, i) => `
+    <div class="flex items-start justify-between gap-2 text-xs py-1 border-b border-slate-800/40 last:border-0">
+      <label class="flex items-start gap-2 cursor-pointer flex-1 ${s.done ? 'line-through text-slate-500' : 'text-slate-200'}">
+        <input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleSubtask('${t.id}', ${i})" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-indigo-500">
+        <span>${s.text}</span>
+      </label>
+      <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-500/20 whitespace-nowrap">${s.aiTool || 'AI'}</span>
+    </div>
+  `).join('');
+
+  return `
+    <div class="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl p-4 space-y-3 shadow">
+      <div class="flex items-center justify-between gap-2">
+        <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-800 text-indigo-300">${proj.name}</span>
+        <select onchange="changeStatus('${t.id}', this.value)" class="bg-slate-950 border border-slate-800 text-[11px] rounded px-2 py-0.5 text-slate-300">
+          <option value="todo" ${t.status==='todo'?'selected':''}>📋 To Do</option>
+          <option value="in-progress" ${t.status==='in-progress'?'selected':''}>⚡ In Progress</option>
+          <option value="done" ${t.status==='done'?'selected':''}>✅ Done</option>
+        </select>
+      </div>
+      <h4 class="font-bold text-sm text-white">${t.title}</h4>
+      ${t.note ? `<div class="text-[11px] text-amber-300/90 bg-amber-950/20 border border-amber-500/20 rounded px-2.5 py-1">📌 ${t.note}</div>` : ''}
+      <div class="space-y-1 pt-1 border-t border-slate-800/80">
+        <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+          <span>AI Sub-tasks</span>
+          <button onclick="addSubtask('${t.id}')" class="text-indigo-400 hover:text-indigo-300 cursor-pointer">+ 新增細項</button>
+        </div>
+        <div class="bg-slate-950/50 rounded-lg p-2 border border-slate-800/60 space-y-0.5">${subHtml}</div>
+      </div>
+    </div>
+  `;
+}
+
+function render() {
+  const pGrid = document.getElementById('projectGrid');
+  if (pGrid) {
+    pGrid.innerHTML = state.projects.map(p => `
+      <div onclick="filterProject('${p.id}')" class="cursor-pointer rounded-xl p-4 border transition ${activeProject===p.id ? 'bg-indigo-950/40 border-indigo-500' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'} space-y-2">
+        <div class="font-bold text-sm text-white">${p.name}</div>
+        <p class="text-[11px] text-slate-400">${p.desc}</p>
+        <div class="space-y-1 pt-2 border-t border-slate-800">
+          <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-400">專用 AI 工具鏈：</div>
+          ${p.tools.map(tl => `
+            <div class="bg-slate-950/90 border border-slate-800/80 rounded p-1.5 text-[11px]">
+              <span class="font-semibold text-emerald-300 mono text-[10px]">${tl.tool}</span>: <span class="text-slate-300">${tl.role}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  const sel = document.getElementById('newProject');
+  if (sel && sel.options.length !== state.projects.length) {
+    sel.innerHTML = state.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  }
+
+  const fLabel = document.getElementById('filterLabel');
+  if (fLabel) fLabel.innerText = activeProject === 'ALL' ? '顯示全部 Projects' : '已過濾專案';
+
+  const filtered = state.tasks.filter(t => activeProject === 'ALL' || t.projectId === activeProject);
+  const container = document.getElementById('viewContainer');
+  if (!container) return;
+
+  if (currentTab === 'focus') {
+    const focusTasks = filtered.filter(t => t.status !== 'done');
+    container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${focusTasks.map(renderTaskCard).join('')}</div>`;
+  } else {
+    const cols = [{ key: 'todo', label: '📋 To Do' }, { key: 'in-progress', label: '⚡ In Progress' }, { key: 'done', label: '✅ Done' }];
+    container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">${cols.map(c => `
+      <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-3 space-y-3">
+        <div class="font-bold text-xs text-slate-300 px-1">${c.label}</div>
+        <div class="space-y-3">${filtered.filter(t => t.status === c.key).map(renderTaskCard).join('')}</div>
+      </div>
+    `).join('')}</div>`;
+  }
+}
+
+// 頁面加載完成後綁定事件
+window.addEventListener('load', () => {
+  // Modal 按鈕
+  document.getElementById('btnGhModal').onclick = openModal;
+  document.getElementById('btnCloseModal').onclick = closeModal;
+  document.getElementById('btnCancelModal').onclick = closeModal;
+
+  // 儲存設定按鈕
+  document.getElementById('btnSaveConfig').onclick = () => {
+    ghConfig.owner = document.getElementById('ghOwner').value.trim();
+    ghConfig.repo = document.getElementById('ghRepo').value.trim();
+    ghConfig.branch = document.getElementById('ghBranch').value.trim();
+    ghConfig.token = document.getElementById('ghToken').value.trim();
+    localStorage.setItem('york_gh_config_v2', JSON.stringify(ghConfig));
+    closeModal();
+    updateSyncUI();
+    if (ghConfig.token) pushToGitHub(true);
+  };
+
+  // 推送按鈕
+  document.getElementById('btnPush').onclick = () => pushToGitHub(true);
+
+  // 新增 Task
+  document.getElementById('btnAddTask').onclick = () => {
+    const title = document.getElementById('newTitle').value.trim();
+    if (!title) return;
+    const projectId = document.getElementById('newProject').value;
+    const aiTool = document.getElementById('newAiTool').value.trim() || 'Gemini';
+    const aiRole = document.getElementById('newAiRole').value.trim() || '輔助開發';
+    state.tasks.unshift({
+      id: 't_' + Date.now(),
+      projectId,
+      title,
+      status: 'in-progress',
+      note: '',
+      subtasks: [{ text: '落實執行方針', aiTool, done: false }]
+    });
+    document.getElementById('newTitle').value = '';
+    document.getElementById('newAiTool').value = '';
+    document.getElementById('newAiRole').value = '';
+    save();
+  };
+
+  // Tab 與 Filter
+  document.getElementById('tabFocus').onclick = () => setTab('focus');
+  document.getElementById('tabKanban').onclick = () => setTab('kanban');
+  document.getElementById('btnResetFilter').onclick = () => filterProject('ALL');
+
+  // 渲染頁面
+  render();
+  updateSyncUI();
+});
+</script>
+</body>
+</html>
