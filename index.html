@@ -18,40 +18,29 @@
         <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white shadow">⚡</div>
         <div>
           <h1 class="font-bold text-base text-white">York's AI Projects & Toolchain Command Center</h1>
-          <p class="text-xs text-slate-400">Single Source of Truth · 全面整合三大產品與 AI 工具分工控制中心 (由 Gemini Spark 全權維護)</p>
+          <p class="text-xs text-slate-400">Single Source of Truth · AI 工具與專案子任務分工矩陣 (由 Gemini Spark 全權維護)</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="resetDefault()" class="text-xs px-3 py-1.5 rounded-lg bg-indigo-600/25 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 font-medium">📥 重置/載入最新專案數據</button>
+        <button onclick="resetDefault()" class="text-xs px-3 py-1.5 rounded-lg bg-indigo-600/25 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 font-medium">📥 載入最新 AI 工具與任務矩陣</button>
       </div>
     </div>
   </header>
 
   <main class="max-w-7xl w-full mx-auto px-4 py-6 space-y-6 flex-1">
-    <!-- 1. 專案與 AI 工具分工總覽 -->
+    <!-- 1. 專案與 AI 工具分工矩陣 -->
     <section>
       <div class="flex items-center justify-between mb-3">
-        <h2 class="text-sm font-bold text-indigo-300 uppercase tracking-wider">🤖 AI Projects & Toolchain Matrix</h2>
-        <span class="text-xs text-slate-400">點擊項目可過濾下方 Tasks</span>
+        <h2 class="text-sm font-bold text-indigo-300 uppercase tracking-wider">🤖 Projects & Dedicated AI Toolchain</h2>
+        <span class="text-xs text-slate-400">點擊項目可快速篩選下方任務清單</span>
       </div>
       <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
     </section>
 
-    <!-- 2. 快速新增 Task -->
-    <section class="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5">
-        <input id="newTitle" type="text" placeholder="+ 輸入新 Task..." class="md:col-span-4 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
-        <select id="newProject" class="md:col-span-2 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-200"></select>
-        <input id="newAiTool" type="text" placeholder="🤖 AI 工具 (如 Claude MCP)" class="md:col-span-2 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-300">
-        <input id="newAiRole" type="text" placeholder="🛠️ 負責做緊乜..." class="md:col-span-3 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300">
-        <button onclick="addTask()" class="md:col-span-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg px-3 py-2 text-xs">新增</button>
-      </div>
-    </section>
-
-    <!-- 3. 視角切換 -->
+    <!-- 2. 視角切換與過濾器 -->
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
       <div class="flex items-center gap-2">
-        <button onclick="setTab('focus')" id="tab-focus" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white">🔥 今日焦點 (Today's Focus)</button>
+        <button onclick="setTab('focus')" id="tab-focus" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white">🔥 進行中焦點 (In Progress)</button>
         <button onclick="setTab('kanban')" id="tab-kanban" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 hover:text-white">🎛️ 項目看板 (Kanban)</button>
       </div>
       <div class="flex items-center gap-2">
@@ -60,206 +49,44 @@
       </div>
     </div>
 
-    <!-- 4. 內容區 -->
+    <!-- 3. 內容區 -->
     <div id="viewContainer"></div>
   </main>
 
 <script>
-const FULL_PROJECTS_DATA = {
+const DETAILED_PROJECTS_DATA = {
   projects: [
     {
       id: 'yorlio',
       name: '📈 Yorlio 財富管理平台',
-      desc: '跨券商（中銀/富途等）與多幣種資產追蹤、真實回報與集中度風險解讀',
+      desc: '跨券商資產追蹤、多幣種即時折算與客觀風險診斷',
       tools: [
         { tool: 'Atoms.dev / Base44', role: 'SaaS 前端原型、Onboarding 與響應式 UI' },
-        { tool: 'Claude / ChatGPT MCP', role: '跨券商持倉客觀風險診斷與資產分析 Agent' },
-        { tool: 'Cloudflare / Gemini', role: 'SEO 結構化標記、Crawler 權限排查與着陸頁文案' }
+        { tool: 'Claude / ChatGPT MCP', role: '持倉 JSON 標準化與跨券商風險診斷' },
+        { tool: 'Cloudflare / Gemini', role: 'SEO 結構化標記、爬蟲權限與着陸頁文案' },
+        { tool: 'Capacitor / TWA', role: 'Android (AAB) / iOS 原生容器封裝' }
       ]
     },
     {
       id: 'growpath',
       name: '🌱 GrowPath 兒童成長與課程決策',
-      desc: '結構化兒童 Profile、研究框架驅動的個人化家庭成長計劃與合適活動媒合',
+      desc: '結構化問卷 Profile、國際框架驅動的個人化家庭計劃與精準課程配對',
       tools: [
-        { tool: 'Lovable / Vibe Coding', role: '快速建構結構化問卷與個人化 Dashboard MVP' },
-        { tool: 'Gemini API', role: '兒童強項摘要生成、30日行動計劃與活動配對' }
+        { tool: 'Lovable / Vibe Coding', role: '結構化問卷原型與個人化 Dashboard MVP' },
+        { tool: 'Gemini API', role: '兒童強項分析、30日家庭行動計劃生成' },
+        { tool: 'Supabase', role: '儲存結構化兒童 Profile 與家長每週回顧' }
       ]
     },
     {
       id: 'global-price',
       name: '🛒 全球格價平台 (香港客戶)',
-      desc: '比較全球來源與香港到手總成本、購買條件與買賣風險透明化',
+      desc: '比較全球電商與香港到手總成本、運費關稅透明化與購買可行性',
       tools: [
-        { tool: 'Atoms.dev / Lovable', role: '多來源比價搜尋 UI 與總成本計算介面' },
-        { tool: 'Gemini API', role: '商品型號對應、運費估算及風險摘要提取' }
+        { tool: 'Atoms.dev / Lovable', role: '多來源商品比價搜尋與總成本分項介面' },
+        { tool: 'Gemini API', role: '跨國商品規格對應、匯率換算與購買風險摘要' }
       ]
     },
     {
       id: 'ai-youtube',
       name: '🎬 AI YouTube 自動化媒體工廠',
-      desc: 'AI 視覺生成流水線、兒童卡通、Viral Shorts 與 Google Trends 標題研究',
-      tools: [
-        { tool: 'Google Flow / Kling AI', role: '生成高一致性角色分鏡與動態視覺素材' },
-        { tool: 'Runway Gen-3 / Luma', role: '製作高質感 B-roll 與特效轉場畫面' },
-        { tool: 'Gemini + Google Trends', role: '挖掘爆款關鍵字、撰寫高留存腳本與 SEO 標題' }
-      ]
-    }
-  ],
-  tasks: [
-    {
-      id: 't1', projectId: 'yorlio', title: '【Yorlio】重構 Landing Page Hero Section 與金融痛點文案',
-      status: 'in-progress', priority: true, aiTool: 'Atoms.dev + Gemini', aiRole: '優化跨券商持倉整合與客觀風險診斷定位',
-      note: '對標高轉換 SaaS 着陸頁標準',
-      subtasks: [
-        { text: '完成 Hero 主標題與 CTA 按鈕階層重構', done: true },
-        { text: '加入跨券商資產總覽視覺預覽圖', done: false }
-      ]
-    },
-    {
-      id: 't2', projectId: 'yorlio', title: '【Yorlio】定義標準化 Portfolio 與持倉風險診斷 JSON Schema',
-      status: 'todo', priority: true, aiTool: 'Claude / ChatGPT MCP', aiRole: '處理多券商 CSV 匯入與資產價值基準貨幣折算',
-      note: '支援高息 ETF（如 3466、3110）與 REITs（如 823）',
-      subtasks: [
-        { text: '定義 accounts, holdings 核心 JSON 結構', done: true },
-        { text: '測試多幣種與匯率折算邏輯', done: false }
-      ]
-    },
-    {
-      id: 't3', projectId: 'growpath', title: '【GrowPath】設計結構化兒童 Profile 問卷與 30 日成長計劃 UI',
-      status: 'in-progress', priority: true, aiTool: 'Lovable / Vibe Coding', aiRole: '落實 dropdown 結構化輸入與個人化 Dashboard',
-      note: '核心邏輯：先理解孩子，再協助選擇活動',
-      subtasks: [
-        { text: '完成 8-12 分鐘結構化問卷前端原型', done: true },
-        { text: '串接 30 日家庭成長行動計劃輸出', done: false }
-      ]
-    },
-    {
-      id: 't4', projectId: 'global-price', title: '【格價平台】建立全球商品比價 MVP 搜尋與總成本計算模型',
-      status: 'todo', priority: false, aiTool: 'Atoms.dev + Gemini', aiRole: '建立多來源比價 UI 與到手總成本分項呈現',
-      note: '聚焦單一垂直品類（如電子/遊戲機）驗證可行性',
-      subtasks: [
-        { text: '定義商品型號、地區版與套裝對應欄位', done: true },
-        { text: '完成運費與總成本計算介面原型', done: false }
-      ]
-    },
-    {
-      id: 't5', projectId: 'ai-youtube', title: '【YouTube】建立自動化 Shorts 兒童卡通與爆款腳本流水線',
-      status: 'todo', priority: false, aiTool: 'Google Flow / Kling AI', aiRole: '固定角色 Seed 生成連貫分鏡並配合 Gemini 輸出腳本',
-      note: '結合 Google Trends 提升推薦率',
-      subtasks: [
-        { text: '建立固定角色外觀 Prompt 模板', done: true },
-        { text: '批量生成首 3 條 Shorts 測試完播率', done: false }
-      ]
-    }
-  ]
-};
-
-let state = JSON.parse(localStorage.getItem('york_ai_dash_v9')) || FULL_PROJECTS_DATA;
-let currentTab = 'focus';
-let activeProject = 'ALL';
-
-function save() { localStorage.setItem('york_ai_dash_v9', JSON.stringify(state)); render(); }
-function resetDefault() { if(confirm('確定要載入/重置全部最新專案數據？')) { state = JSON.parse(JSON.stringify(FULL_PROJECTS_DATA)); save(); } }
-function filterProject(id) { activeProject = id; render(); }
-function setTab(tab) {
-  currentTab = tab;
-  document.getElementById('tab-focus').className = tab === 'focus' ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white' : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 hover:text-white';
-  document.getElementById('tab-kanban').className = tab === 'kanban' ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white' : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 hover:text-white';
-  render();
-}
-function addTask() {
-  const title = document.getElementById('newTitle').value.trim();
-  if (!title) return;
-  const projectId = document.getElementById('newProject').value;
-  const aiTool = document.getElementById('newAiTool').value.trim() || 'Gemini / AI';
-  const aiRole = document.getElementById('newAiRole').value.trim() || '輔助開發';
-  state.tasks.unshift({ id: 't_' + Date.now(), projectId, title, status: 'todo', priority: true, aiTool, aiRole, note: '', subtasks: [] });
-  document.getElementById('newTitle').value = '';
-  document.getElementById('newAiTool').value = '';
-  document.getElementById('newAiRole').value = '';
-  save();
-}
-function toggleSubtask(taskId, idx) { const t = state.tasks.find(x => x.id === taskId); if (t && t.subtasks[idx]) { t.subtasks[idx].done = !t.subtasks[idx].done; save(); } }
-function addSubtaskPrompt(taskId) { const text = prompt('輸入 Sub-task 名稱：'); if (!text) return; const t = state.tasks.find(x => x.id === taskId); if (t) { t.subtasks.push({ text, done: false }); save(); } }
-function changeStatus(taskId, newStatus) { const t = state.tasks.find(x => x.id === taskId); if (t) { t.status = newStatus; save(); } }
-
-function renderTaskCard(t) {
-  const proj = state.projects.find(p => p.id === t.projectId) || { name: t.projectId };
-  const subHtml = (t.subtasks || []).map((s, i) => `
-    <label class="flex items-start gap-2 text-xs cursor-pointer py-0.5 ${s.done ? 'line-through text-slate-500' : 'text-slate-200'}">
-      <input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleSubtask('${t.id}', ${i})" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-indigo-500">
-      <span>${s.text}</span>
-    </label>
-  `).join('');
-  return `
-    <div class="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl p-4 space-y-3 shadow">
-      <div class="flex items-center justify-between gap-2">
-        <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-800 text-indigo-300">${proj.name}</span>
-        <select onchange="changeStatus('${t.id}', this.value)" class="bg-slate-950 border border-slate-800 text-[11px] rounded px-2 py-0.5 text-slate-300">
-          <option value="todo" ${t.status==='todo'?'selected':''}>📋 To Do</option>
-          <option value="in-progress" ${t.status==='in-progress'?'selected':''}>⚡ In Progress</option>
-          <option value="done" ${t.status==='done'?'selected':''}>✅ Done</option>
-        </select>
-      </div>
-      <h4 class="font-bold text-sm text-white leading-snug">${t.title}</h4>
-      <div class="bg-indigo-950/40 border border-indigo-500/30 rounded-lg p-2.5 text-xs space-y-1">
-        <div class="flex items-center gap-1.5 font-semibold text-indigo-300">
-          <span>🤖 AI 工具：</span>
-          <span class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-white mono text-[11px]">${t.aiTool}</span>
-        </div>
-        <div class="text-slate-300 text-[11px]">🛠️ <b>分工：</b>${t.aiRole}</div>
-      </div>
-      ${t.note ? `<div class="text-[11px] text-amber-300/90 bg-amber-950/30 border border-amber-500/20 rounded px-2.5 py-1.5">📌 備忘：${t.note}</div>` : ''}
-      <div class="space-y-1 pt-1 border-t border-slate-800/80">
-        <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1">
-          <span>Sub-tasks (${(t.subtasks||[]).filter(x=>x.done).length}/${(t.subtasks||[]).length})</span>
-          <button onclick="addSubtaskPrompt('${t.id}')" class="text-indigo-400 hover:text-indigo-300">+ 加細項</button>
-        </div>
-        ${subHtml}
-      </div>
-    </div>
-  `;
-}
-
-function render() {
-  const pGrid = document.getElementById('projectGrid');
-  pGrid.innerHTML = state.projects.map(p => `
-    <div onclick="filterProject('${p.id}')" class="cursor-pointer rounded-xl p-4 border transition ${activeProject===p.id ? 'bg-indigo-950/40 border-indigo-500' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'} space-y-2.5">
-      <div class="font-bold text-sm text-white">${p.name}</div>
-      <p class="text-[11px] text-slate-400">${p.desc}</p>
-      <div class="space-y-1.5 pt-2 border-t border-slate-800">
-        <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-400">AI 工具分工：</div>
-        ${p.tools.map(tl => `
-          <div class="bg-slate-950/90 border border-slate-800/90 rounded-lg p-2 text-[11px]">
-            <span class="font-semibold text-emerald-300 mono">${tl.tool}</span> ➔ <span class="text-slate-200">${tl.role}</span>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
-
-  const sel = document.getElementById('newProject');
-  if (sel.options.length !== state.projects.length) {
-    sel.innerHTML = state.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-  }
-  document.getElementById('filterLabel').innerText = activeProject === 'ALL' ? '顯示全部 Projects' : '已過濾專案';
-  const filtered = state.tasks.filter(t => activeProject === 'ALL' || t.projectId === activeProject);
-  const container = document.getElementById('viewContainer');
-  if (currentTab === 'focus') {
-    const focusTasks = filtered.filter(t => t.status !== 'done');
-    container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${focusTasks.map(renderTaskCard).join('')}</div>`;
-  } else {
-    const cols = [{ key: 'todo', label: '📋 To Do' }, { key: 'in-progress', label: '⚡ In Progress' }, { key: 'done', label: '✅ Done' }];
-    container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">${cols.map(c => `
-      <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-3 space-y-3">
-        <div class="font-bold text-xs text-slate-300 px-1">${c.label}</div>
-        <div class="space-y-3">${filtered.filter(t => t.status === c.key).map(renderTaskCard).join('')}</div>
-      </div>
-    `).join('')}</div>`;
-  }
-}
-render();
-</script>
-</body>
-</html>
+      desc: 'AI
