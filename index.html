@@ -23,26 +23,26 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <span id="syncStatus" class="text-[11px] px-2.5 py-1 rounded bg-slate-800 text-slate-400 border border-slate-700">檢查中...</span>
-        <button id="btnGhConfig" onclick="openGhModal()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium cursor-pointer transition">⚙️ GitHub 設定</button>
-        <button onclick="pushToGitHub(true)" class="text-xs px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow cursor-pointer transition">💾 立即推送 GitHub</button>
+        <span id="syncStatus" class="text-[11px] px-2.5 py-1 rounded bg-slate-800 text-slate-400 border border-slate-700">未連接 GitHub</span>
+        <button id="btnGhModal" type="button" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium cursor-pointer">⚙️ GitHub 設定</button>
+        <button id="btnPush" type="button" class="text-xs px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow cursor-pointer">💾 立即推送 GitHub</button>
       </div>
     </div>
   </header>
 
-  <!-- GitHub Config Modal (改用 inline style 控制 display) -->
-  <div id="ghModal" style="display: none;" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+  <!-- GitHub Config Drawer / Overlay -->
+  <div id="ghModal" style="display: none;" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
         <h3 class="text-sm font-bold text-white">⚙️ GitHub API 自動同步設定</h3>
-        <button onclick="closeGhModal()" class="text-slate-400 hover:text-white text-lg font-bold p-1 cursor-pointer">✕</button>
+        <button id="btnCloseModal" type="button" class="text-slate-400 hover:text-white text-base font-bold p-1">✕</button>
       </div>
       <p class="text-xs text-slate-300 leading-relaxed">
-        設定後，所有 Task 新增、狀態變更及勾選皆會自動透過 GitHub REST API commit 並 push 至 Repo，無需手動改檔。Token 僅存於你本機瀏覽器。
+        填入 GitHub Token 後，在此網頁上任何新增 Task、打剔、變更狀態都會直接自動 push 到 Repo，免手動開 GitHub。
       </p>
       <div class="space-y-3 text-xs">
         <div>
-          <label class="block text-slate-400 mb-1">Repo Owner (GitHub 帳號)</label>
+          <label class="block text-slate-400 mb-1">Repo Owner</label>
           <input id="ghOwner" type="text" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-white mono" value="yorkleung0512-ops">
         </div>
         <div>
@@ -54,14 +54,14 @@
           <input id="ghBranch" type="text" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-white mono" value="main">
         </div>
         <div>
-          <label class="block text-slate-400 mb-1">GitHub Personal Access Token (PAT)</label>
+          <label class="block text-slate-400 mb-1">Personal Access Token (PAT)</label>
           <input id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-white mono">
-          <span class="text-[10px] text-slate-500">需包含 repo 或 contents:write 權限。</span>
+          <span class="text-[10px] text-slate-500">只需 repo 權限，資料只保存在本地 localStorage。</span>
         </div>
       </div>
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
-        <button onclick="closeGhModal()" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs cursor-pointer">取消</button>
-        <button onclick="saveGhConfig()" class="px-3 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold cursor-pointer">儲存設定</button>
+        <button id="btnCancelModal" type="button" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs">取消</button>
+        <button id="btnSaveConfig" type="button" class="px-3 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold">儲存並測試連接</button>
       </div>
     </div>
   </div>
@@ -71,11 +71,28 @@
     <section>
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-sm font-bold text-indigo-300 uppercase tracking-wider">🤖 Projects & Dedicated AI Toolchain</h2>
-        <span class="text-xs text-slate-400">點擊專案可過濾任務</span>
+        <span class="text-xs text-slate-400">點擊卡片可過濾專案</span>
       </div>
       <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
     </section>
 
     <!-- 2. 快速新增 Task -->
     <section class="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
-      <div
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5">
+        <input id="newTitle" type="text" placeholder="+ 輸入新 Task 標題..." class="md:col-span-4 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
+        <select id="newProject" class="md:col-span-2 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-200"></select>
+        <input id="newAiTool" type="text" placeholder="🤖 負責 AI (如 Claude MCP)" class="md:col-span-2 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-300">
+        <input id="newAiRole" type="text" placeholder="🛠️ 具體分工..." class="md:col-span-3 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300">
+        <button id="btnAddTask" type="button" class="md:col-span-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg px-3 py-2 text-xs cursor-pointer">新增</button>
+      </div>
+    </section>
+
+    <!-- 3. 視角切換 -->
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+      <div class="flex items-center gap-2">
+        <button id="tabFocus" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer">🔥 焦點任務 (In Progress)</button>
+        <button id="tabKanban" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 hover:text-white cursor-pointer">🎛️ 看板模式 (Kanban)</button>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="filterLabel" class="text-xs text-slate-400">顯示全部 Projects</span>
+        <button id="btnResetFilter" type="button" class="text-xs px-2.5 py-1 rounded
