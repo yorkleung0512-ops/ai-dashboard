@@ -5,28 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>York's AI Projects & Toolchain Command Center</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    }
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', 'Noto Sans TC', sans-serif; background:#070b12; color:#f1f5f9; }
+    body { font-family: 'Inter', 'Noto Sans TC', sans-serif; transition: background-color 0.2s, color 0.2s; }
     .mono { font-family: 'JetBrains Mono', monospace; }
-    .panze-card { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
-    .panze-card:hover { border-color: rgba(99, 102, 241, 0.6); }
+    
+    /* 深色主題卡片 */
+    html.dark body { background: #070b12; color: #f1f5f9; }
+    html.dark .panze-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
+    html.dark .panze-card:hover { border-color: rgba(99, 102, 241, 0.6); }
+    html.dark .panze-inner { background: rgba(2, 6, 23, 0.6); border-color: rgba(30, 41, 59, 0.8); }
+
+    /* 淺色/白色主題卡片 */
+    html:not(.dark) body { background: #f8fafc; color: #0f172a; }
+    html:not(.dark) .panze-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
+    html:not(.dark) .panze-card:hover { border-color: #6366f1; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.1); }
+    html:not(.dark) .panze-inner { background: #f1f5f9; border-color: #e2e8f0; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
   <!-- Header -->
-  <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur sticky top-0 z-30 px-5 py-3.5">
+  <header class="border-b border-slate-200 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 backdrop-blur sticky top-0 z-30 px-5 py-3.5 transition-colors">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20">⚡</div>
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-bold text-white shadow-md shadow-indigo-500/20">⚡</div>
         <div>
-          <h1 class="font-bold text-sm tracking-wide text-white">PANZE STUDIO // AI COMMAND CENTER</h1>
-          <p class="text-[11px] text-slate-400">Single Source of Truth · 多欄卡片控制台與自動同步</p>
+          <h1 class="font-bold text-sm tracking-wide text-slate-900 dark:text-white">PANZE STUDIO // AI COMMAND CENTER</h1>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Single Source of Truth · 多欄卡片控制台與自動同步</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <span id="syncStatus" class="text-[11px] px-2.5 py-1 rounded-md bg-slate-900 text-slate-400 border border-slate-800">檢查中...</span>
-        <button id="btnGhModal" type="button" class="text-xs px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-medium cursor-pointer transition">⚙️ GitHub 設定</button>
+        <span id="syncStatus" class="text-[11px] px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">檢查中...</span>
+        <!-- 主題切換按鈕 -->
+        <button id="btnThemeToggle" type="button" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium cursor-pointer transition flex items-center gap-1.5" title="切換深色/淺色主題">
+          <span id="themeIcon">🌙</span>
+          <span id="themeText" class="hidden sm:inline">深色模式</span>
+        </button>
+        <button id="btnGhModal" type="button" class="text-xs px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium cursor-pointer transition">⚙️ GitHub 設定</button>
         <button id="btnPush" type="button" class="text-xs px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-md shadow-indigo-600/25 cursor-pointer transition">💾 立即推送 GitHub</button>
       </div>
     </div>
@@ -34,47 +54,47 @@
 
   <!-- GitHub Config Modal -->
   <div id="ghModal" style="display: none;" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-        <h3 class="text-sm font-bold text-white">⚙️ GitHub API 自動同步設定</h3>
-        <button id="btnCloseModal" type="button" class="text-slate-400 hover:text-white text-base font-bold p-1">✕</button>
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-white">⚙️ GitHub API 自動同步設定</h3>
+        <button id="btnCloseModal" type="button" class="text-slate-400 hover:text-slate-700 dark:hover:text-white text-base font-bold p-1">✕</button>
       </div>
-      <p class="text-xs text-slate-300 leading-relaxed">
+      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
         填入 GitHub Token 後，網頁上所有操作均直接透過 API commit 至 Repo，無需手動修改。Token 僅存於本機。
       </p>
       <div class="space-y-3 text-xs">
         <div>
-          <label class="block text-slate-400 mb-1">Repo Owner</label>
-          <input id="ghOwner" type="text" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-white mono" value="yorkleung0512-ops">
+          <label class="block text-slate-500 dark:text-slate-400 mb-1">Repo Owner</label>
+          <input id="ghOwner" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="yorkleung0512-ops">
         </div>
         <div>
-          <label class="block text-slate-400 mb-1">Repo Name</label>
-          <input id="ghRepo" type="text" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-white mono" value="ai-dashboard">
+          <label class="block text-slate-500 dark:text-slate-400 mb-1">Repo Name</label>
+          <input id="ghRepo" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="ai-dashboard">
         </div>
         <div>
-          <label class="block text-slate-400 mb-1">Branch</label>
-          <input id="ghBranch" type="text" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-white mono" value="main">
+          <label class="block text-slate-500 dark:text-slate-400 mb-1">Branch</label>
+          <input id="ghBranch" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="main">
         </div>
         <div>
-          <label class="block text-slate-400 mb-1">Personal Access Token (PAT)</label>
-          <input id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-white mono">
-          <span class="text-[10px] text-slate-500">需勾選 repo 權限。</span>
+          <label class="block text-slate-500 dark:text-slate-400 mb-1">Personal Access Token (PAT)</label>
+          <input id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono">
+          <span class="text-[10px] text-slate-400 dark:text-slate-500">需勾選 repo 權限。</span>
         </div>
       </div>
-      <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
-        <button id="btnCancelModal" type="button" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs">取消</button>
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+        <button id="btnCancelModal" type="button" class="px-3 py-1.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs">取消</button>
         <button id="btnSaveConfig" type="button" class="px-3.5 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold">儲存並連接</button>
       </div>
     </div>
   </div>
 
   <main class="max-w-7xl w-full mx-auto px-5 py-6 space-y-7 flex-1">
-    <!-- 1. Panze Studio 風格多欄專案卡片佈局 -->
+    <!-- 1. Panze Studio 多欄專案卡片佈局 -->
     <section>
       <div class="flex items-center justify-between mb-3.5">
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-          <h2 class="text-xs font-bold text-slate-300 tracking-wider uppercase">Active Projects & Toolchain Matrix</h2>
+          <h2 class="text-xs font-bold text-slate-700 dark:text-slate-300 tracking-wider uppercase">Active Projects & Toolchain Matrix</h2>
         </div>
         <span class="text-xs text-slate-400">點擊卡片切換過濾視角</span>
       </div>
@@ -84,23 +104,23 @@
     <!-- 2. 快速建立任務列 -->
     <section class="panze-card rounded-xl p-4 shadow-sm">
       <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5">
-        <input id="newTitle" type="text" placeholder="+ 輸入新 Task 標題..." class="md:col-span-4 bg-slate-950/80 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
-        <select id="newProject" class="md:col-span-2 bg-slate-950/80 border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-200"></select>
-        <input id="newAiTool" type="text" placeholder="🤖 負責 AI (如 Claude MCP)" class="md:col-span-2 bg-slate-950/80 border border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-300">
-        <input id="newAiRole" type="text" placeholder="🛠️ 具體分工..." class="md:col-span-3 bg-slate-950/80 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300">
+        <input id="newTitle" type="text" placeholder="+ 輸入新 Task 標題..." class="md:col-span-4 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-indigo-500 focus:outline-none">
+        <select id="newProject" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-800 dark:text-slate-200"></select>
+        <input id="newAiTool" type="text" placeholder="🤖 負責 AI (如 Claude MCP)" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-600 dark:text-indigo-300">
+        <input id="newAiRole" type="text" placeholder="🛠️ 具體分工..." class="md:col-span-3 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-slate-300">
         <button id="btnAddTask" type="button" class="md:col-span-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg px-3 py-2 text-xs cursor-pointer shadow">新增</button>
       </div>
     </section>
 
     <!-- 3. 看板控制視角 -->
-    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800/80 pb-3">
       <div class="flex items-center gap-2">
         <button id="tabFocus" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm">🔥 焦點任務 (In Progress)</button>
-        <button id="tabKanban" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 hover:text-white cursor-pointer">🎛️ 完整看板 (Kanban)</button>
+        <button id="tabKanban" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">🎛️ 完整看板 (Kanban)</button>
       </div>
       <div class="flex items-center gap-2">
-        <span id="filterLabel" class="text-xs text-slate-400">顯示全部 Projects</span>
-        <button id="btnResetFilter" type="button" class="text-xs px-2.5 py-1 rounded bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800 cursor-pointer">顯示全部</button>
+        <span id="filterLabel" class="text-xs text-slate-500 dark:text-slate-400">顯示全部 Projects</span>
+        <button id="btnResetFilter" type="button" class="text-xs px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 cursor-pointer">顯示全部</button>
       </div>
     </div>
 
@@ -217,7 +237,7 @@ const DEFAULT_DATA = {
 
 let state = DEFAULT_DATA;
 try {
-  const local = localStorage.getItem('york_ai_dash_v15');
+  const local = localStorage.getItem('york_ai_dash_v16');
   if (local) state = JSON.parse(local);
 } catch (e) {
   state = DEFAULT_DATA;
@@ -237,8 +257,35 @@ try {
 let currentTab = 'focus';
 let activeProject = 'ALL';
 
+// 主題切換邏輯
+function initTheme() {
+  const savedTheme = localStorage.getItem('york_theme') || 'dark';
+  applyTheme(savedTheme);
+}
+
+function applyTheme(theme) {
+  const html = document.documentElement;
+  const icon = document.getElementById('themeIcon');
+  const text = document.getElementById('themeText');
+  if (theme === 'dark') {
+    html.classList.add('dark');
+    if (icon) icon.innerText = '🌙';
+    if (text) text.innerText = '深色模式';
+  } else {
+    html.classList.remove('dark');
+    if (icon) icon.innerText = '☀️';
+    if (text) text.innerText = '淺色模式';
+  }
+  localStorage.setItem('york_theme', theme);
+}
+
+function toggleTheme() {
+  const isDark = document.documentElement.classList.contains('dark');
+  applyTheme(isDark ? 'light' : 'dark');
+}
+
 function save() {
-  localStorage.setItem('york_ai_dash_v15', JSON.stringify(state));
+  localStorage.setItem('york_ai_dash_v16', JSON.stringify(state));
   render();
   if (ghConfig.token) {
     pushToGitHub(false);
@@ -249,16 +296,16 @@ function updateSyncUI(status, msg) {
   const el = document.getElementById('syncStatus');
   if (!el) return;
   if (status === 'synced') {
-    el.className = 'text-[11px] px-2.5 py-1 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-500/30';
+    el.className = 'text-[11px] px-2.5 py-1 rounded bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30';
     el.innerText = '✅ GitHub 已同步';
   } else if (status === 'syncing') {
-    el.className = 'text-[11px] px-2.5 py-1 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-500/30 animate-pulse';
+    el.className = 'text-[11px] px-2.5 py-1 rounded bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-500/30 animate-pulse';
     el.innerText = '🔄 推送中...';
   } else if (status === 'error') {
-    el.className = 'text-[11px] px-2.5 py-1 rounded bg-rose-950/80 text-rose-300 border border-rose-500/30';
+    el.className = 'text-[11px] px-2.5 py-1 rounded bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-500/30';
     el.innerText = '⚠️ 同步失敗: ' + (msg || '');
   } else {
-    el.className = 'text-[11px] px-2.5 py-1 rounded bg-slate-900 text-slate-400 border border-slate-800';
+    el.className = 'text-[11px] px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800';
     el.innerText = ghConfig.token ? '⚡ 已配置 Token' : '⚠️ 未配置 Token (僅本機)';
   }
 }
@@ -350,8 +397,8 @@ function setTab(tab) {
   const f = document.getElementById('tabFocus');
   const k = document.getElementById('tabKanban');
   if (f && k) {
-    f.className = tab === 'focus' ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm' : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 hover:text-white cursor-pointer';
-    k.className = tab === 'kanban' ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm' : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-400 hover:text-white cursor-pointer';
+    f.className = tab === 'focus' ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm' : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer';
+    k.className = tab === 'kanban' ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm' : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer';
   }
   render();
 }
@@ -378,7 +425,6 @@ function addSubtask(taskId) {
   }
 }
 
-// 計算單一專案進度百分比
 function getProjectProgress(projId) {
   const pTasks = state.tasks.filter(t => t.projectId === projId);
   let total = 0, done = 0;
@@ -394,65 +440,64 @@ function getProjectProgress(projId) {
 function renderTaskCard(t) {
   const proj = state.projects.find(p => p.id === t.projectId) || { name: t.projectId };
   const subHtml = (t.subtasks || []).map((s, i) => `
-    <div class="flex items-start justify-between gap-2 text-xs py-1.5 border-b border-slate-800/40 last:border-0">
-      <label class="flex items-start gap-2 cursor-pointer flex-1 ${s.done ? 'line-through text-slate-500' : 'text-slate-200'}">
-        <input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleSubtask('${t.id}', ${i})" class="mt-0.5 rounded bg-slate-950 border-slate-700 text-indigo-500 focus:ring-0">
+    <div class="flex items-start justify-between gap-2 text-xs py-1.5 border-b border-slate-100 dark:border-slate-800/40 last:border-0">
+      <label class="flex items-start gap-2 cursor-pointer flex-1 ${s.done ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}">
+        <input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleSubtask('${t.id}', ${i})" class="mt-0.5 rounded bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-0">
         <span>${s.text}</span>
       </label>
-      <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-slate-900 text-indigo-300 border border-slate-800 whitespace-nowrap">${s.aiTool || 'AI'}</span>
+      <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-800 whitespace-nowrap">${s.aiTool || 'AI'}</span>
     </div>
   `).join('');
 
   return `
-    <div class="panze-card rounded-xl p-4 space-y-3.5 shadow-sm transition">
+    <div class="panze-card rounded-xl p-4 space-y-3.5 transition">
       <div class="flex items-center justify-between gap-2">
-        <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-950/80 text-indigo-300 border border-slate-800">${proj.name}</span>
-        <select onchange="changeStatus('${t.id}', this.value)" class="bg-slate-950 border border-slate-800 text-[11px] rounded px-2 py-0.5 text-slate-300">
+        <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950/80 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-800">${proj.name}</span>
+        <select onchange="changeStatus('${t.id}', this.value)" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[11px] rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">
           <option value="todo" ${t.status==='todo'?'selected':''}>📋 To Do</option>
           <option value="in-progress" ${t.status==='in-progress'?'selected':''}>⚡ In Progress</option>
           <option value="done" ${t.status==='done'?'selected':''}>✅ Done</option>
         </select>
       </div>
-      <h4 class="font-bold text-sm text-white leading-snug">${t.title}</h4>
-      ${t.note ? `<div class="text-[11px] text-amber-300/90 bg-amber-950/20 border border-amber-500/20 rounded px-2.5 py-1">📌 ${t.note}</div>` : ''}
-      <div class="space-y-1.5 pt-1 border-t border-slate-800/80">
-        <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1">
-          <span class="font-medium text-slate-300">AI Sub-tasks</span>
-          <button onclick="addSubtask('${t.id}')" class="text-indigo-400 hover:text-indigo-300 cursor-pointer">+ 新增細項</button>
+      <h4 class="font-bold text-sm text-slate-900 dark:text-white leading-snug">${t.title}</h4>
+      ${t.note ? `<div class="text-[11px] text-amber-800 dark:text-amber-300/90 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-500/20 rounded px-2.5 py-1">📌 ${t.note}</div>` : ''}
+      <div class="space-y-1.5 pt-1 border-t border-slate-100 dark:border-slate-800/80">
+        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
+          <span class="font-medium text-slate-700 dark:text-slate-300">AI Sub-tasks</span>
+          <button onclick="addSubtask('${t.id}')" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 cursor-pointer">+ 新增細項</button>
         </div>
-        <div class="bg-slate-950/60 rounded-lg p-2.5 border border-slate-800/60 space-y-0.5">${subHtml}</div>
+        <div class="panze-inner rounded-lg p-2.5 border space-y-0.5">${subHtml}</div>
       </div>
     </div>
   `;
 }
 
 function render() {
-  // 1. 渲染 Panze Studio 多欄卡片
   const pGrid = document.getElementById('projectGrid');
   if (pGrid) {
     pGrid.innerHTML = state.projects.map(p => {
       const pct = getProjectProgress(p.id);
       const isSelected = activeProject === p.id;
       return `
-        <div onclick="filterProject('${p.id}')" class="panze-card cursor-pointer rounded-xl p-4 transition relative flex flex-col justify-between ${isSelected ? 'border-indigo-500 ring-1 ring-indigo-500/40 bg-indigo-950/20' : ''}">
+        <div onclick="filterProject('${p.id}')" class="panze-card cursor-pointer rounded-xl p-4 transition relative flex flex-col justify-between ${isSelected ? 'border-indigo-500 ring-2 ring-indigo-500/30 bg-indigo-50/50 dark:bg-indigo-950/20' : ''}">
           <div class="space-y-2">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-sm text-white">${p.name}</span>
-              <span class="text-[11px] mono font-semibold text-indigo-400">${pct}%</span>
+              <span class="font-bold text-sm text-slate-900 dark:text-white">${p.name}</span>
+              <span class="text-[11px] mono font-semibold text-indigo-600 dark:text-indigo-400">${pct}%</span>
             </div>
             <!-- 進度條 -->
-            <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-800">
+            <div class="w-full bg-slate-100 dark:bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
               <div class="bg-gradient-to-r from-indigo-500 to-violet-500 h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
             </div>
-            <p class="text-[11px] text-slate-400 leading-relaxed">${p.desc}</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">${p.desc}</p>
           </div>
 
-          <div class="space-y-1.5 pt-3 mt-3 border-t border-slate-800/80">
+          <div class="space-y-1.5 pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80">
             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">專用 AI 工具鏈：</div>
             <div class="flex flex-wrap gap-1">
               ${p.tools.map(tl => `
-                <span class="text-[10px] mono px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-300" title="${tl.role}">
-                  <span class="text-emerald-400">${tl.tool}</span>
+                <span class="text-[10px] mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300" title="${tl.role}">
+                  <span class="text-emerald-600 dark:text-emerald-400">${tl.tool}</span>
                 </span>
               `).join('')}
             </div>
@@ -481,9 +526,9 @@ function render() {
     const cols = [{ key: 'todo', label: '📋 To Do' }, { key: 'in-progress', label: '⚡ In Progress' }, { key: 'done', label: '✅ Done' }];
     container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">${cols.map(c => `
       <div class="panze-card rounded-xl p-3.5 space-y-3">
-        <div class="font-bold text-xs text-slate-300 px-1 flex items-center justify-between">
+        <div class="font-bold text-xs text-slate-700 dark:text-slate-300 px-1 flex items-center justify-between">
           <span>${c.label}</span>
-          <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-slate-950 text-slate-400">${filtered.filter(t => t.status === c.key).length}</span>
+          <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-950 text-slate-500 dark:text-slate-400">${filtered.filter(t => t.status === c.key).length}</span>
         </div>
         <div class="space-y-3">${filtered.filter(t => t.status === c.key).map(renderTaskCard).join('')}</div>
       </div>
@@ -493,6 +538,9 @@ function render() {
 
 // 頁面加載完成後綁定事件
 window.addEventListener('load', () => {
+  initTheme();
+  document.getElementById('btnThemeToggle').onclick = toggleTheme;
+
   document.getElementById('btnGhModal').onclick = openModal;
   document.getElementById('btnCloseModal').onclick = closeModal;
   document.getElementById('btnCancelModal').onclick = closeModal;
