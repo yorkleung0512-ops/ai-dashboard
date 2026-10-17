@@ -24,7 +24,7 @@
     /* 淺色/白色主題卡片 */
     html:not(.dark) body { background: #f8fafc; color: #0f172a; }
     html:not(.dark) .panze-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
-    html:not(.dark) .panze-card:hover { border-color: #6366f1; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.1); }
+    html.dark .panze-card:hover { border-color: #6366f1; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.1); }
     html:not(.dark) .panze-inner { background: #f1f5f9; border-color: #e2e8f0; }
   </style>
 </head>
@@ -99,16 +99,16 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-slate-500 dark:text-slate-400 mb-1">專案代號 (ID, 英文唯一值)</label>
-            <input id="projNewId" type="text" placeholder="例如: my-ai-agent" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono">
+            <input id="projNewId" type="text" placeholder="例如: trading-bot" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono">
           </div>
           <div>
             <label class="block text-slate-500 dark:text-slate-400 mb-1">專案名稱 (含 Emoji)</label>
-            <input id="projNewName" type="text" placeholder="例如: 🤖 AI 客服中樞" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
+            <input id="projNewName" type="text" placeholder="例如: 🤖 智能交易 Bot" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
           </div>
         </div>
         <div>
           <label class="block text-slate-500 dark:text-slate-400 mb-1">一句話定位與簡介</label>
-          <input id="projNewDesc" type="text" placeholder="例如: 結合 Claude MCP 與 WhatsApp API 的自動化客服流程" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
+          <input id="projNewDesc" type="text" placeholder="例如: 自動化交易訊號、Webhook 串接與風險控管" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -133,7 +133,7 @@
           <label class="block text-slate-500 dark:text-slate-400 mb-1">
             專用 AI 工具鏈 (每行格式: <span class="mono text-indigo-500">工具名稱: 負責角色</span>)
           </label>
-          <textarea id="projNewTools" rows="3" placeholder="Claude MCP: 核心診斷 Agent&#10;Supabase: 資料庫與即時同步&#10;Atoms.dev: 前端響應式 UI" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono"></textarea>
+          <textarea id="projNewTools" rows="3" placeholder="Cursor / Grok: 策略邏輯與 Python 腳本&#10;CCXT: 交易所 API 串接" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono"></textarea>
         </div>
       </div>
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
@@ -161,7 +161,7 @@
           <span class="text-xs text-slate-400 hidden sm:inline">點擊卡片篩選 · 點擊 AI 工具可全域過濾</span>
         </div>
       </div>
-      <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4"></div>
+      <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4"></div>
     </section>
 
     <!-- 快速建立任務列 -->
@@ -175,7 +175,7 @@
           <option value="3">Phase 3: 實測反饋</option>
           <option value="4">Phase 4: 變現驗證</option>
         </select>
-        <input id="newAiTool" type="text" placeholder="🤖 負責 AI (如 Gemini API)" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-600 dark:text-indigo-300">
+        <input id="newAiTool" type="text" placeholder="🤖 負責 AI (如 Grok / Cursor)" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-600 dark:text-indigo-300">
         <button id="btnAddTask" type="button" class="md:col-span-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg px-3 py-2 text-xs cursor-pointer shadow">新增任務</button>
       </div>
     </section>
@@ -246,6 +246,18 @@ const DEFAULT_DATA = {
       ]
     },
     {
+      id: 'trading-bot',
+      name: '🤖 智能交易訊號 Bot',
+      desc: '自動化交易策略回測、Webhook 訊號接收與風險控管執行',
+      status: 'ontrack',
+      currentPhase: 2,
+      tools: [
+        { tool: 'Grok / Cursor', role: '策略邏輯與 Python 腳本編寫' },
+        { tool: 'CCXT / API', role: '交易所對接與下單執行' },
+        { tool: 'TradingView', role: 'Webhook 策略警報觸發' }
+      ]
+    },
+    {
       id: 'global-price',
       name: '🛒 全球格價平台',
       desc: '比較全球電商與香港到手總成本、購買可行性透明化',
@@ -270,6 +282,20 @@ const DEFAULT_DATA = {
     }
   ],
   tasks: [
+    {
+      id: 't_bot_1',
+      projectId: 'trading-bot',
+      phase: 2,
+      title: '【Trading Bot】自動化策略架構與 Webhook 接收端建置',
+      status: 'in-progress',
+      note: '由 Grok 協同編寫 Python 核心接收與驗證機制',
+      promptSnippet: 'Build a secure Python FastAPI webhook endpoint to receive TradingView alert JSON payloads, validate tokens, and route orders via CCXT.',
+      subtasks: [
+        { text: '設計 FastAPI Webhook 接收端與安全驗證', aiTool: 'Grok / Cursor', done: true },
+        { text: '串接 CCXT 交易所測試網 API 進行下單模擬', aiTool: 'CCXT / API', done: false },
+        { text: '設定 TradingView 策略警報與 JSON Payload 格式', aiTool: 'TradingView', done: false }
+      ]
+    },
     {
       id: 't_kakak_1',
       projectId: 'halo-kakak',
@@ -369,18 +395,22 @@ const DEFAULT_DATA = {
   ]
 };
 
-// 安全載入並正規化資料結構，避免舊 LocalStorage 欄位缺失導致白畫面
+// 安全載入並強制重設為最新 v22 版本（確保 Trading Bot 必定顯示）
 let state = DEFAULT_DATA;
 try {
-  const local = localStorage.getItem('york_ai_dash_v21');
+  const local = localStorage.getItem('york_ai_dash_v22');
   if (local) {
     const parsed = JSON.parse(local);
     if (parsed && parsed.projects && parsed.tasks) {
       state = parsed;
+      // 確保如果舊快取冇 trading-bot，自動合拼入去
+      if (!state.projects.some(p => p.id === 'trading-bot')) {
+        const botProj = DEFAULT_DATA.projects.find(p => p.id === 'trading-bot');
+        if (botProj) state.projects.splice(3, 0, botProj);
+      }
     }
   }
 } catch (e) {
-  console.error('Failed to load localStorage, fallback to default:', e);
   state = DEFAULT_DATA;
 }
 
@@ -427,9 +457,9 @@ function toggleTheme() {
 
 function save() {
   try {
-    localStorage.setItem('york_ai_dash_v21', JSON.stringify(state));
+    localStorage.setItem('york_ai_dash_v22', JSON.stringify(state));
   } catch (e) {
-    console.error('Save to localStorage error:', e);
+    console.error('Save error:', e);
   }
   render();
   if (ghConfig.token) {
@@ -582,7 +612,7 @@ function changePhase(taskId, p) {
 function addSubtask(taskId) {
   const text = prompt('輸入 Sub-task 名稱：');
   if (!text) return;
-  const aiTool = prompt('負責 AI 工具：', 'Gemini API') || 'AI';
+  const aiTool = prompt('負責 AI 工具：', 'Grok') || 'AI';
   const t = state.tasks.find(x => x.id === taskId);
   if (t) {
     if (!t.subtasks) t.subtasks = [];
@@ -660,7 +690,6 @@ function renderTaskCard(t) {
 }
 
 function render() {
-  // 1. KPI 橫幅
   const kpiEl = document.getElementById('kpiOverview');
   if (kpiEl) {
     let allSubtasks = 0, doneSubtasks = 0;
@@ -709,13 +738,11 @@ function render() {
     `;
   }
 
-  // 2. 專案標題更新
   const pHeader = document.getElementById('projectsHeader');
   if (pHeader) {
     pHeader.innerText = `Active Projects & Phase Tracker (${(state.projects || []).length} Projects)`;
   }
 
-  // 3. 渲染專案卡片
   const pGrid = document.getElementById('projectGrid');
   if (pGrid) {
     pGrid.innerHTML = (state.projects || []).map(p => {
@@ -769,13 +796,11 @@ function render() {
     }).join('');
   }
 
-  // 4. 更新任務新增選單中的專案清單
   const sel = document.getElementById('newProject');
   if (sel) {
     sel.innerHTML = (state.projects || []).map(p => `<option value="${p.id}">${p.name}</option>`).join('');
   }
 
-  // 5. 過濾條件標籤
   const fLabel = document.getElementById('filterLabel');
   if (fLabel) {
     let labelText = `顯示全部 Projects (${(state.projects || []).length})`;
@@ -789,7 +814,6 @@ function render() {
     fLabel.innerText = labelText;
   }
 
-  // 6. 任務過濾與視圖切換
   let filtered = state.tasks || [];
   if (activeProject !== 'ALL') {
     filtered = filtered.filter(t => t.projectId === activeProject);
@@ -853,7 +877,6 @@ window.addEventListener('load', () => {
   initTheme();
   document.getElementById('btnThemeToggle').onclick = toggleTheme;
 
-  // GitHub Modal
   document.getElementById('btnGhModal').onclick = openModal;
   document.getElementById('btnCloseModal').onclick = closeModal;
   document.getElementById('btnCancelModal').onclick = closeModal;
@@ -871,7 +894,6 @@ window.addEventListener('load', () => {
 
   document.getElementById('btnPush').onclick = () => pushToGitHub(true);
 
-  // 新增專案 Modal 事件綁定
   document.getElementById('btnOpenAddProject').onclick = openAddProjectModal;
   document.getElementById('btnCloseProjModal').onclick = closeAddProjectModal;
   document.getElementById('btnCancelProjModal').onclick = closeAddProjectModal;
@@ -912,20 +934,19 @@ window.addEventListener('load', () => {
       desc: desc || '自主開發專案',
       currentPhase,
       status,
-      tools: tools.length > 0 ? tools : [{ tool: 'Gemini / AI', role: '全端開發輔助' }]
+      tools: tools.length > 0 ? tools : [{ tool: 'Grok / AI', role: '全端開發輔助' }]
     });
 
     closeAddProjectModal();
     save();
   };
 
-  // 任務新增
   document.getElementById('btnAddTask').onclick = () => {
     const title = document.getElementById('newTitle').value.trim();
     if (!title) return;
     const projectId = document.getElementById('newProject').value;
     const phase = parseInt(document.getElementById('newPhase').value) || 2;
-    const aiTool = document.getElementById('newAiTool').value.trim() || 'Gemini API';
+    const aiTool = document.getElementById('newAiTool').value.trim() || 'Grok';
     if (!state.tasks) state.tasks = [];
     state.tasks.unshift({
       id: 't_' + Date.now(),
