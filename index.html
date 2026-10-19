@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>York's AI Projects & Toolchain Command Center</title>
+  <title>York AI 專案指揮中心</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { darkMode: 'class' }</script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -24,8 +24,8 @@
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-bold text-white shadow-md shadow-indigo-500/20">⚡</div>
         <div>
-          <h1 class="font-bold text-sm tracking-wide text-slate-900 dark:text-white">PANZE STUDIO // AI COMMAND CENTER</h1>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">Canonical SoT · agent_sync @ yorlio-staging · synced by Grok bots</p>
+          <h1 class="font-bold text-sm tracking-wide text-slate-900 dark:text-white">PANZE STUDIO // AI 指揮中心</h1>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">權威 SoT · agent_sync @ yorlio-staging · 由 Grok bots 同步</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -47,10 +47,10 @@
       </div>
       <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Token 僅存本機。正式 SoT 更新由 Supabase Sync Expert commit。</p>
       <div class="space-y-3 text-xs">
-        <div><label class="block text-slate-500 dark:text-slate-400 mb-1">Repo Owner</label><input id="ghOwner" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="yorkleung0512-ops"></div>
-        <div><label class="block text-slate-500 dark:text-slate-400 mb-1">Repo Name</label><input id="ghRepo" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="ai-dashboard"></div>
-        <div><label class="block text-slate-500 dark:text-slate-400 mb-1">Branch</label><input id="ghBranch" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="main"></div>
-        <div><label class="block text-slate-500 dark:text-slate-400 mb-1">Personal Access Token (PAT)</label><input id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono"><span class="text-[10px] text-slate-400">需勾選 repo 權限。</span></div>
+        <div><label class="block text-slate-500 dark:text-slate-400 mb-1">Repo 擁有者</label><input id="ghOwner" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="yorkleung0512-ops"></div>
+        <div><label class="block text-slate-500 dark:text-slate-400 mb-1">Repo 名稱</label><input id="ghRepo" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="ai-dashboard"></div>
+        <div><label class="block text-slate-500 dark:text-slate-400 mb-1">分支</label><input id="ghBranch" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="main"></div>
+        <div><label class="block text-slate-500 dark:text-slate-400 mb-1">個人存取權杖（PAT）</label><input id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono"><span class="text-[10px] text-slate-400">需勾選 repo 權限。</span></div>
       </div>
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
         <button id="btnCancelModal" type="button" class="px-3 py-1.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs">取消</button>
@@ -67,7 +67,7 @@
       <div class="flex items-center justify-between mb-3.5">
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-          <h2 id="projectsHeader" class="text-xs font-bold text-slate-700 dark:text-slate-300 tracking-wider uppercase">SoT Projects</h2>
+          <h2 id="projectsHeader" class="text-xs font-bold text-slate-700 dark:text-slate-300 tracking-wider uppercase">SoT 專案</h2>
         </div>
         <span class="text-xs text-slate-400">點擊卡片過濾任務</span>
       </div>
@@ -76,7 +76,7 @@
 
     <section class="panze-card rounded-xl p-4 shadow-sm">
       <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5">
-        <input id="newTitle" type="text" placeholder="+ 輸入新 Task（僅本機；正式寫入請走 agent_sync）..." class="md:col-span-4 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-indigo-500 focus:outline-none">
+        <input id="newTitle" type="text" placeholder="+ 輸入新任務（僅本機；正式寫入請走 agent_sync）..." class="md:col-span-4 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-indigo-500 focus:outline-none">
         <select id="newProject" class="md:col-span-3 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-800 dark:text-slate-200"></select>
         <input id="newAiTool" type="text" placeholder="🤖 負責 AI / Bot" class="md:col-span-3 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-600 dark:text-indigo-300">
         <button id="btnAddTask" type="button" class="md:col-span-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg px-3 py-2 text-xs cursor-pointer shadow">新增任務</button>
@@ -88,7 +88,7 @@
         <button id="tabFocus" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm">🔥 任務清單</button>
         <button id="tabKanban" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 cursor-pointer">🎛️ 看板</button>
         <button id="tabDecisions" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 cursor-pointer">🧭 決策</button>
-        <button id="tabLinks" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 cursor-pointer">🔗 連結 / Env</button>
+        <button id="tabLinks" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 cursor-pointer">🔗 連結／環境</button>
       </div>
       <div class="flex items-center gap-2">
         <span id="filterLabel" class="text-xs text-slate-500 dark:text-slate-400"></span>
@@ -477,7 +477,7 @@ function updateSyncUI(status, msg) {
     el.innerText = '⚠️ 同步失敗: ' + (msg || '');
   } else {
     el.className = 'text-[11px] px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800';
-    el.innerText = ghConfig.token ? '⚡ 已配置 Token' : '📦 SoT embedded';
+    el.innerText = ghConfig.token ? '⚡ 已配置 Token' : '📦 已嵌入 SoT';
   }
 }
 
@@ -538,10 +538,11 @@ function setTab(tab) {
 }
 
 function statusBadge(status) {
-  if (status === 'active' || status === 'shipping') return '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-500/30">🟢 ' + status + '</span>';
-  if (status === 'blocked') return '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-500/30">🔴 blocked</span>';
-  if (status === 'archived' || status === 'done') return '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-400 border border-slate-500/30">⬛ ' + status + '</span>';
-  return '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-500/30">🟡 ' + status + '</span>';
+  const label = labelStatus(status);
+  if (status === 'active' || status === 'shipping') return '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-500/30" title="' + status + '">🟢 ' + label + '</span>';
+  if (status === 'blocked') return '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-500/30" title="blocked">🔴 受阻</span>';
+  if (status === 'archived' || status === 'done') return '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-400 border border-slate-500/30" title="' + status + '">⬛ ' + label + '</span>';
+  return '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-500/30" title="' + status + '">🟡 ' + label + '</span>';
 }
 
 function healthDot(h) {
@@ -551,17 +552,49 @@ function healthDot(h) {
   return '⚪';
 }
 
+function labelStatus(status) {
+  const map = {
+    active: '進行中', shipping: '交付中', blocked: '受阻', archived: '已封存',
+    done: '完成', todo: '待辦', 'in-progress': '進行中', open: '未開始',
+    in_progress: '進行中', paused: '暫停', planned: '計劃中', accepted: '已採納',
+    superseded: '已取代', rejected: '已否決', proposed: '提議中'
+  };
+  return map[status] || status || '—';
+}
+
+function labelHealth(h) {
+  const map = {
+    green: '良好', healthy: '健康', yellow: '注意', degraded: '降級',
+    red: '異常', down: '停機', unknown: '未知'
+  };
+  return map[h] || h || '—';
+}
+
+function labelPriority(p) {
+  const map = { critical: '緊急', high: '高', medium: '中', low: '低' };
+  return map[p] || p || '—';
+}
+
+function labelLinkType(t) {
+  const map = {
+    dashboard: '儀表板', deploy: '部署', github: 'GitHub', docs: '文件',
+    staging: 'Staging', production: 'Production', other: '其他'
+  };
+  return map[t] || t || '—';
+}
+
+
 function renderTaskCard(t) {
   const proj = state.projects.find(p => p.id === t.projectId) || { name: t.projectId };
   const blocker = t.isBlocker && t.status !== 'done'
-    ? '<span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold">BLOCKER</span>'
+    ? '<span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold">阻礙</span>'
     : '';
   const reason = t.blockedReason ? `<div class="text-[11px] text-amber-400/90">⛔ ${t.blockedReason}</div>` : '';
   return `
     <div class="panze-card rounded-xl p-4 space-y-3 ${t.isBlocker && t.status !== 'done' ? 'ring-1 ring-rose-500/40' : ''}">
       <div class="flex items-center justify-between gap-2">
         <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950/80 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-800">${proj.name}</span>
-        <div class="flex items-center gap-1.5">${blocker}<span class="text-xs text-slate-400 font-mono">${t.status}</span></div>
+        <div class="flex items-center gap-1.5">${blocker}<span class="text-xs text-slate-400" title="${t.status}">${labelStatus(t.status)}</span></div>
       </div>
       <h4 class="font-bold text-sm text-slate-900 dark:text-white">${t.title}</h4>
       ${t.body ? `<p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3">${t.body}</p>` : ''}
@@ -574,36 +607,36 @@ function render() {
   const meta = state.sotMeta || {};
   const blockers = (state.tasks || []).filter(t => t.isBlocker && t.status !== 'done').length;
   const openTasks = (state.tasks || []).filter(t => ['todo','in-progress','blocked'].includes(t.status)).length;
-  const healthLabel = blockers ? `Yellow (${blockers} blockers)` : 'Green';
+  const healthLabel = blockers ? `注意（${blockers} 個阻礙）` : '良好';
 
   const banner = document.getElementById('sotBanner');
   if (banner) {
     banner.innerHTML = `
       <div class="flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full ${blockers ? 'bg-amber-400' : 'bg-emerald-400'} animate-pulse"></span>
-        <span class="text-indigo-200 font-medium">Canonical SoT: <span class="mono text-white">yorlio-staging / agent_sync</span></span>
+        <span class="text-indigo-200 font-medium">權威 SoT：<span class="mono text-white">yorlio-staging / agent_sync</span></span>
       </div>
       <div class="flex flex-wrap items-center gap-3 text-slate-400 mono text-[11px]">
-        <span>WS <strong class="text-slate-200">${meta.workspaceCount || 0}</strong></span>
-        <span>Projects <strong class="text-indigo-300">${meta.projectCount || state.projects.length}</strong></span>
-        <span>Open <strong class="text-slate-200">${openTasks}</strong></span>
-        <span>Blockers <strong class="${blockers ? 'text-amber-300' : 'text-emerald-400'}">${blockers}</strong></span>
-        <span>Decisions <strong class="text-slate-200">${(state.decisions||[]).length}</strong></span>
-        <span class="text-slate-500">export ${meta.exportedAt || ''}</span>
+        <span>工作區 <strong class="text-slate-200">${meta.workspaceCount || 0}</strong></span>
+        <span>專案 <strong class="text-indigo-300">${meta.projectCount || state.projects.length}</strong></span>
+        <span>未完成 <strong class="text-slate-200">${openTasks}</strong></span>
+        <span>阻礙 <strong class="${blockers ? 'text-amber-300' : 'text-emerald-400'}">${blockers}</strong></span>
+        <span>決策 <strong class="text-slate-200">${(state.decisions||[]).length}</strong></span>
+        <span class="text-slate-500">匯出 ${meta.exportedAt || ''}</span>
       </div>`;
   }
 
   const kpiEl = document.getElementById('kpiOverview');
   if (kpiEl) {
     kpiEl.innerHTML = `
-      <div class="panze-card rounded-xl p-3.5 space-y-1"><span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">SoT Blockers</span><div class="text-xl font-bold ${blockers ? 'text-amber-400' : 'text-emerald-500'}">${blockers} 阻礙</div></div>
-      <div class="panze-card rounded-xl p-3.5 space-y-1"><span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">進行中 / 未完成</span><div class="text-xl font-bold text-slate-900 dark:text-white">${openTasks} 個</div></div>
-      <div class="panze-card rounded-xl p-3.5 space-y-1"><span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">SoT Projects</span><div class="text-xl font-bold text-indigo-500">${state.projects.length} 個</div></div>
-      <div class="panze-card rounded-xl p-3.5 space-y-1"><span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">整體健康</span><div class="text-xl font-bold ${blockers ? 'text-amber-400' : 'text-emerald-400'}">${healthLabel}</div></div>`;
+      <div class="panze-card rounded-xl p-3.5 space-y-1"><span class="text-[10px] text-slate-500 font-bold tracking-wider">SoT 阻礙</span><div class="text-xl font-bold ${blockers ? 'text-amber-400' : 'text-emerald-500'}">${blockers} 個</div></div>
+      <div class="panze-card rounded-xl p-3.5 space-y-1"><span class="text-[10px] text-slate-500 font-bold tracking-wider">進行中／未完成</span><div class="text-xl font-bold text-slate-900 dark:text-white">${openTasks} 個</div></div>
+      <div class="panze-card rounded-xl p-3.5 space-y-1"><span class="text-[10px] text-slate-500 font-bold tracking-wider">SoT 專案</span><div class="text-xl font-bold text-indigo-500">${state.projects.length} 個</div></div>
+      <div class="panze-card rounded-xl p-3.5 space-y-1"><span class="text-[10px] text-slate-500 font-bold tracking-wider">整體健康</span><div class="text-xl font-bold ${blockers ? 'text-amber-400' : 'text-emerald-400'}">${healthLabel}</div></div>`;
   }
 
   const hdr = document.getElementById('projectsHeader');
-  if (hdr) hdr.innerText = `SoT Projects (${state.projects.length})`;
+  if (hdr) hdr.innerText = `SoT 專案（${state.projects.length}）`;
 
   const pGrid = document.getElementById('projectGrid');
   if (pGrid) {
@@ -620,10 +653,10 @@ function render() {
             <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">${p.desc}</p>
             ${p.latestSummary ? `<p class="text-[11px] text-slate-400 italic">最新: ${p.latestSummary}</p>` : ''}
             <div class="bg-slate-900/60 rounded-lg p-2.5 border border-slate-800/80 space-y-1 text-[11px] mono">
-              <div><span class="text-slate-400">WS:</span> <span class="text-slate-200">${p.workspace || '-'}</span> · health ${healthDot(p.health)} ${p.health || '-'}</div>
-              <div><span class="text-slate-400">Front:</span> <span class="text-slate-200">${stack.frontend || '-'}</span></div>
-              <div><span class="text-slate-400">DB:</span> <span class="text-slate-200">${stack.database || '-'}</span></div>
-              <div><span class="text-indigo-400">AI:</span> <span class="text-emerald-400 font-semibold">${stack.ai || '-'}</span></div>
+              <div><span class="text-slate-400">工作區：</span> <span class="text-slate-200">${p.workspace || '-'}</span> · 健康 ${healthDot(p.health)} ${labelHealth(p.health)}</div>
+              <div><span class="text-slate-400">前端：</span> <span class="text-slate-200">${stack.frontend || '-'}</span></div>
+              <div><span class="text-slate-400">資料庫：</span> <span class="text-slate-200">${stack.database || '-'}</span></div>
+              <div><span class="text-indigo-400">AI：</span> <span class="text-emerald-400 font-semibold">${stack.ai || '-'}</span></div>
             </div>
           </div>
         </div>`;
@@ -633,7 +666,7 @@ function render() {
   const sel = document.getElementById('newProject');
   if (sel) sel.innerHTML = state.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
   const fLabel = document.getElementById('filterLabel');
-  if (fLabel) fLabel.innerText = activeProject === 'ALL' ? `顯示全部 Projects (${state.projects.length})` : `已過濾: ${activeProject}`;
+  if (fLabel) fLabel.innerText = activeProject === 'ALL' ? `顯示全部專案（${state.projects.length}）` : `已過濾：${activeProject}`;
 
   const container = document.getElementById('viewContainer');
   if (!container) return;
@@ -645,10 +678,10 @@ function render() {
       : `<div class="panze-card rounded-xl p-8 text-center text-xs text-slate-400">目前沒有任務（SoT 為空則保持空白）</div>`;
   } else if (currentTab === 'kanban') {
     const cols = [
-      { key: 'todo', label: '📋 To Do' },
-      { key: 'in-progress', label: '⚡ In Progress' },
-      { key: 'blocked', label: '⛔ Blocked' },
-      { key: 'done', label: '✅ Done' }
+      { key: 'todo', label: '📋 待辦' },
+      { key: 'in-progress', label: '⚡ 進行中' },
+      { key: 'blocked', label: '⛔ 受阻' },
+      { key: 'done', label: '✅ 完成' }
     ];
     container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">${cols.map(c => `
       <div class="panze-card rounded-xl p-3.5 space-y-3">
@@ -662,38 +695,45 @@ function render() {
     const decs = (state.decisions || []).filter(d => activeProject === 'ALL' || d.projectId === activeProject);
     container.innerHTML = decs.length ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${decs.map(d => `
       <div class="panze-card rounded-xl p-4 space-y-2">
-        <div class="flex justify-between gap-2"><span class="text-[11px] font-semibold text-indigo-300">${d.projectId}</span><span class="text-[10px] mono text-emerald-400">${d.status}</span></div>
+        <div class="flex justify-between gap-2"><span class="text-[11px] font-semibold text-indigo-300">${d.projectId}</span><span class="text-[10px] text-emerald-400" title="${d.status}">${labelStatus(d.status)}</span></div>
         <h4 class="font-bold text-sm text-white">${d.title}</h4>
         <p class="text-xs text-slate-300 leading-relaxed">${d.decision}</p>
-        <div class="text-[11px] text-slate-500">by ${d.agent}</div>
-      </div>`).join('')}</div>` : `<div class="panze-card rounded-xl p-8 text-center text-xs text-slate-400">No decisions in SoT</div>`;
+        <div class="text-[11px] text-slate-500">由 ${d.agent}</div>
+      </div>`).join('')}</div>` : `<div class="panze-card rounded-xl p-8 text-center text-xs text-slate-400">目前沒有決策（SoT 為空則保持空白）</div>`;
   } else if (currentTab === 'links') {
     const links = (state.links || []).filter(l => activeProject === 'ALL' || l.projectId === activeProject);
     const envs = (state.environments || []).filter(e => activeProject === 'ALL' || e.projectId === activeProject);
     container.innerHTML = `
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div class="space-y-3">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">External Links</h3>
+          <h3 class="text-xs font-bold tracking-wider text-slate-400">外部連結</h3>
           ${links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" class="panze-card rounded-xl p-3 block hover:border-indigo-500">
-            <div class="text-[10px] mono text-indigo-400">${l.linkType} · ${l.projectId}</div>
+            <div class="text-[10px] mono text-indigo-400" title="${l.linkType}">${labelLinkType(l.linkType)} · ${l.projectId}</div>
             <div class="font-semibold text-sm text-white">${l.label}</div>
             <div class="text-[11px] text-slate-500 mono truncate">${l.url}</div>
-          </a>`).join('') || '<div class="text-xs text-slate-500">No links</div>'}
+          </a>`).join('') || '<div class="text-xs text-slate-500">目前沒有連結</div>'}
         </div>
         <div class="space-y-3">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Environments</h3>
+          <h3 class="text-xs font-bold tracking-wider text-slate-400">環境</h3>
           ${envs.map(e => `<div class="panze-card rounded-xl p-3">
-            <div class="flex justify-between"><span class="font-semibold text-sm">${healthDot(e.health)} ${e.name}</span><span class="text-[10px] mono text-slate-400">${e.kind}</span></div>
+            <div class="flex justify-between"><span class="font-semibold text-sm">${healthDot(e.health)} ${e.name} <span class="text-[10px] text-slate-500">（${labelHealth(e.health)}）</span></span><span class="text-[10px] mono text-slate-400">${e.kind === 'staging' ? '測試環境' : e.kind === 'production' ? '正式環境' : (e.kind || '')}</span></div>
             <div class="text-[11px] text-slate-400">${e.provider || ''} · ${e.projectId}</div>
             ${e.url ? `<a class="text-[11px] text-indigo-400 mono" href="${e.url}" target="_blank" rel="noopener">${e.url}</a>` : ''}
-          </div>`).join('') || '<div class="text-xs text-slate-500">No environments</div>'}
+          </div>`).join('') || '<div class="text-xs text-slate-500">目前沒有環境</div>'}
         </div>
       </div>`;
   }
 }
 
 window.addEventListener('load', () => {
-  document.getElementById('btnThemeToggle').onclick = () => document.documentElement.classList.toggle('dark');
+  document.getElementById('btnThemeToggle').onclick = () => {
+    document.documentElement.classList.toggle('dark');
+    const dark = document.documentElement.classList.contains('dark');
+    const icon = document.getElementById('themeIcon');
+    const txt = document.getElementById('themeText');
+    if (icon) icon.textContent = dark ? '🌙' : '☀️';
+    if (txt) txt.textContent = dark ? '深色模式' : '淺色模式';
+  };
   document.getElementById('btnGhModal').onclick = openModal;
   document.getElementById('btnCloseModal').onclick = closeModal;
   document.getElementById('btnCancelModal').onclick = closeModal;
@@ -719,7 +759,7 @@ window.addEventListener('load', () => {
       id: 'local_' + Date.now(),
       projectId: document.getElementById('newProject').value,
       title,
-      body: '(local-only; not written to agent_sync)',
+      body: '（僅本機；未寫入 agent_sync）',
       status: 'in-progress',
       sotStatus: 'in_progress',
       isBlocker: false,
