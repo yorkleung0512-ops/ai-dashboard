@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>York's AI Projects & Toolchain Command Center</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { darkMode: 'class' }
-  </script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', 'Noto Sans TC', sans-serif; transition: background-color 0.2s, color 0.2s; }
@@ -15,300 +13,452 @@
     html.dark body { background: #070b12; color: #f1f5f9; }
     html.dark .panze-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
     html.dark .panze-card:hover { border-color: rgba(99, 102, 241, 0.6); }
-    html.dark .panze-inner { background: rgba(2, 6, 23, 0.6); border-color: rgba(30, 41, 59, 0.8); }
     html:not(.dark) body { background: #f8fafc; color: #0f172a; }
-    html:not(.dark) .panze-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
-    html:not(.dark) .panze-card:hover { border-color: #6366f1; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.1); }
-    html:not(.dark) .panze-inner { background: #f1f5f9; border-color: #e2e8f0; }
+    html:not(.dark) .panze-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05); }
+    html:not(.dark) .panze-card:hover { border-color: #6366f1; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
-  <header class="border-b border-slate-200 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 backdrop-blur sticky top-0 z-30 px-5 py-3.5 transition-colors">
+  <header class="border-b border-slate-200 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 backdrop-blur sticky top-0 z-30 px-5 py-3.5">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-bold text-white shadow-md shadow-indigo-500/20">⚡</div>
         <div>
           <h1 class="font-bold text-sm tracking-wide text-slate-900 dark:text-white">PANZE STUDIO // AI COMMAND CENTER</h1>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">Single Source of Truth · 全 6 大專案全端架構與 AI 工具矩陣</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Canonical SoT · agent_sync @ yorlio-staging · synced by Grok bots</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
         <span id="syncStatus" class="text-[11px] px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">檢查中...</span>
         <button id="btnThemeToggle" type="button" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium cursor-pointer transition flex items-center gap-1.5">
-          <span id="themeIcon">🌙</span>
-          <span id="themeText" class="hidden sm:inline">深色模式</span>
+          <span id="themeIcon">🌙</span><span id="themeText" class="hidden sm:inline">深色模式</span>
         </button>
-        <button id="btnGhModal" type="button" class="text-xs px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium cursor-pointer transition">⚙️ GitHub 設定</button>
-        <button id="btnPush" type="button" class="text-xs px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-md shadow-indigo-600/25 cursor-pointer transition">💾 立即推送 GitHub</button>
+        <button id="btnGhModal" type="button" class="text-xs px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium cursor-pointer">⚙️ GitHub 設定</button>
+        <button id="btnPush" type="button" class="text-xs px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-md shadow-indigo-600/25 cursor-pointer">💾 立即推送 GitHub</button>
       </div>
     </div>
   </header>
 
-  <!-- GitHub Config Modal -->
-  <div id="ghModal" style="display: none;" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+  <div id="ghModal" style="display:none;" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white">⚙️ GitHub API 自動同步設定</h3>
         <button id="btnCloseModal" type="button" class="text-slate-400 hover:text-slate-700 dark:hover:text-white text-base font-bold p-1">✕</button>
       </div>
-      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-        填入 GitHub Token 後，網頁上所有操作均直接透過 API commit 至 Repo，無需手動修改。Token 僅存於本機。
-      </p>
+      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Token 僅存本機。正式 SoT 更新由 Supabase Sync Expert commit。</p>
       <div class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">Repo Owner</label>
-          <input id="ghOwner" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="yorkleung0512-ops">
-        </div>
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">Repo Name</label>
-          <input id="ghRepo" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="ai-dashboard">
-        </div>
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">Branch</label>
-          <input id="ghBranch" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="main">
-        </div>
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">Personal Access Token (PAT)</label>
-          <input id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono">
-          <span class="text-[10px] text-slate-400 dark:text-slate-500">需勾選 repo 權限。</span>
-        </div>
+        <div><label class="block text-slate-500 dark:text-slate-400 mb-1">Repo Owner</label><input id="ghOwner" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="yorkleung0512-ops"></div>
+        <div><label class="block text-slate-500 dark:text-slate-400 mb-1">Repo Name</label><input id="ghRepo" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="ai-dashboard"></div>
+        <div><label class="block text-slate-500 dark:text-slate-400 mb-1">Branch</label><input id="ghBranch" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="main"></div>
+        <div><label class="block text-slate-500 dark:text-slate-400 mb-1">Personal Access Token (PAT)</label><input id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono"><span class="text-[10px] text-slate-400">需勾選 repo 權限。</span></div>
       </div>
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-        <button id="btnCancelModal" type="button" class="px-3 py-1.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs">取消</button>
-        <button id="btnSaveConfig" type="button" class="px-3.5 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold">儲存並連接</button>
+        <button id="btnCancelModal" type="button" class="px-3 py-1.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs">取消</button>
+        <button id="btnSaveConfig" type="button" class="px-3.5 py-1.5 rounded bg-indigo-600 text-white text-xs font-semibold">儲存並連接</button>
       </div>
     </div>
   </div>
 
   <main class="max-w-7xl w-full mx-auto px-5 py-6 space-y-7 flex-1">
-    <!-- SoT 狀態指示欄 -->
-    <div class="bg-indigo-950/30 border border-indigo-500/30 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-      <div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span class="text-indigo-200 font-medium">Canonical SoT: <span class="mono text-white">yorlio-staging</span> (agent_sync)</span>
-      </div>
-      <div class="flex items-center gap-3 text-slate-400 mono text-[11px]">
-        <span>Workspace: <strong class="text-slate-200">yorlio</strong></span>
-        <span>Project: <strong class="text-slate-200">main</strong></span>
-        <span>Blockers: <strong class="text-emerald-400">0</strong></span>
-        <span>All Projects: <strong class="text-indigo-400">6 專案完全展示</strong></span>
-      </div>
-    </div>
-
-    <!-- Executive KPI -->
+    <div id="sotBanner" class="bg-indigo-950/30 border border-indigo-500/30 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs"></div>
     <section id="kpiOverview" class="grid grid-cols-2 sm:grid-cols-4 gap-3.5"></section>
 
-    <!-- 專案矩陣卡片 (6 大專案全列) -->
     <section>
       <div class="flex items-center justify-between mb-3.5">
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-          <h2 id="projectsHeader" class="text-xs font-bold text-slate-700 dark:text-slate-300 tracking-wider uppercase">Active Projects & Tech Matrix (6 Projects)</h2>
+          <h2 id="projectsHeader" class="text-xs font-bold text-slate-700 dark:text-slate-300 tracking-wider uppercase">SoT Projects</h2>
         </div>
-        <span class="text-xs text-slate-400">點擊卡片可切換專案過濾視角</span>
+        <span class="text-xs text-slate-400">點擊卡片過濾任務</span>
       </div>
       <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </section>
 
-    <!-- 快速建立任務列 -->
     <section class="panze-card rounded-xl p-4 shadow-sm">
       <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5">
-        <input id="newTitle" type="text" placeholder="+ 輸入新 Task 標題..." class="md:col-span-4 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-indigo-500 focus:outline-none">
+        <input id="newTitle" type="text" placeholder="+ 輸入新 Task（僅本機；正式寫入請走 agent_sync）..." class="md:col-span-4 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-indigo-500 focus:outline-none">
         <select id="newProject" class="md:col-span-3 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-800 dark:text-slate-200"></select>
-        <input id="newAiTool" type="text" placeholder="🤖 負責 AI (如 Gemini / Claude / Grok)" class="md:col-span-3 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-600 dark:text-indigo-300">
+        <input id="newAiTool" type="text" placeholder="🤖 負責 AI / Bot" class="md:col-span-3 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-600 dark:text-indigo-300">
         <button id="btnAddTask" type="button" class="md:col-span-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg px-3 py-2 text-xs cursor-pointer shadow">新增任務</button>
       </div>
     </section>
 
-    <!-- 視角切換器 -->
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800/80 pb-3">
       <div class="flex items-center gap-2">
-        <button id="tabFocus" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm">🔥 任務清單 (Tasks)</button>
-        <button id="tabKanban" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">🎛️ 完整看板 (Kanban)</button>
-        <button id="tabRoadmap" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">🚀 階段路線圖 (Roadmap)</button>
+        <button id="tabFocus" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm">🔥 任務清單</button>
+        <button id="tabKanban" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 cursor-pointer">🎛️ 看板</button>
+        <button id="tabDecisions" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 cursor-pointer">🧭 決策</button>
+        <button id="tabLinks" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 cursor-pointer">🔗 連結 / Env</button>
       </div>
       <div class="flex items-center gap-2">
-        <span id="filterLabel" class="text-xs text-slate-500 dark:text-slate-400">顯示全部 Projects (6)</span>
-        <button id="btnResetFilter" type="button" class="text-xs px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 cursor-pointer">重設過濾</button>
+        <span id="filterLabel" class="text-xs text-slate-500 dark:text-slate-400"></span>
+        <button id="btnResetFilter" type="button" class="text-xs px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 cursor-pointer">重設過濾</button>
       </div>
     </div>
 
-    <!-- 任務內容區 -->
     <div id="viewContainer"></div>
   </main>
 
 <script>
-const PHASE_NAMES = {
-  1: 'Phase 1: 需求釐清',
-  2: 'Phase 2: MVP 原型',
-  3: 'Phase 3: 實測反饋',
-  4: 'Phase 4: 變現驗證'
-};
-
 const DEFAULT_DATA = {
-  projects: [
+  "sotMeta": {
+    "exportedAt": "2026-10-19T17:22:07.200961+00:00",
+    "workspaceCount": 4,
+    "projectCount": 5,
+    "todoCount": 8,
+    "openTaskCount": 6,
+    "blockerCount": 2,
+    "decisionCount": 4,
+    "linkCount": 6,
+    "envCount": 3,
+    "source": "agent_sync @ yorlio-staging (foqgydlgzjsdwclsbimu)",
+    "syncedBy": "supabase-sync-expert"
+  },
+  "projects": [
     {
-      id: 'main',
-      sotId: 'ebe1c8a4-ed61-475d-8960-b97e50ff0128',
-      name: '📈 Yorlio 財富管理',
-      desc: 'Yorlio portfolio app + yorlio.com — migrate off Atoms to Path A self-host',
-      status: 'active',
-      health: 'green',
-      currentPhase: 2,
-      stack: {
-        frontend: 'Path A Self-host / HTML5',
-        backend: 'Cloudflare / Serverless',
-        database: 'Supabase (foqgydlgzjsdwclsbimu)',
-        hosting: 'Cloudflare / Self-host',
-        ai: 'Claude MCP, Gemini'
+      "id": "hk-dev",
+      "sotId": "f4e13560-fbc4-40ac-b4b2-3b78aceffe92",
+      "workspace": "growpath",
+      "name": "🌱 GrowPath HK dev",
+      "desc": "Supabase project currently INACTIVE; free-tier slot consideration",
+      "status": "archived",
+      "health": "unknown",
+      "priority": "low",
+      "rowVersion": 1,
+      "currentPhase": 1,
+      "stack": {
+        "frontend": "Lovable / React",
+        "backend": "Vercel",
+        "database": "INACTIVE",
+        "hosting": "paused",
+        "ai": "—"
       },
-      tools: [
-        { tool: 'Claude MCP', role: '持倉分析與架構遷移邏輯' },
-        { tool: 'Gemini', role: '跨 Agent 狀態同步與文件驗證' }
-      ]
+      "tools": [],
+      "latestSummary": "Supabase growpath-hk-dev is INACTIVE; kept in SoT for portfolio visibility",
+      "blockersCount": 0
     },
     {
-      id: 'growpath',
-      name: '🌱 GrowPath 兒童成長',
-      desc: '結構化問卷 Profile、國際研究框架與精準課程媒合',
-      status: 'active',
-      health: 'green',
-      currentPhase: 2,
-      stack: {
-        frontend: 'Lovable / React',
-        backend: 'Vercel Serverless',
-        database: 'Supabase DB',
-        hosting: 'Vercel',
-        ai: 'Gemini API'
+      "id": "household",
+      "sotId": "e77ed5b5-f8ab-4c2d-ba2e-8f9f40a5c9cc",
+      "workspace": "halo-kakak",
+      "name": "🏠 Halo Kakak household sync",
+      "desc": "Household schema on halo-kakak Supabase; Phase1 staging table needs RLS review",
+      "status": "active",
+      "health": "yellow",
+      "priority": "high",
+      "rowVersion": 1,
+      "currentPhase": 1,
+      "stack": {
+        "frontend": "React + Tailwind",
+        "backend": "Supabase Realtime",
+        "database": "yevqwospotfujiziegpz",
+        "hosting": "TBD",
+        "ai": "Halo-kakak"
       },
-      tools: [
-        { tool: 'Lovable', role: '問卷結構化與 Dashboard MVP' },
-        { tool: 'Gemini API', role: '強項分析與 30 日計劃生成' }
-      ]
+      "tools": [],
+      "latestSummary": "Seeded from Sync Expert: active Supabase; _phase1_sql_staging RLS gap tracked as blocker todo",
+      "blockersCount": 1
     },
     {
-      id: 'halo-kakak',
-      name: '🏠 屋企家務通 (Halo Kakak!)',
-      desc: '香港僱主與印傭雙語家務管理、廣東話轉地道印尼文、TTS 與跨機即時同步',
-      status: 'active',
-      health: 'green',
-      currentPhase: 2,
-      stack: {
-        frontend: 'React + Tailwind CSS',
-        backend: 'Supabase Realtime API',
-        database: 'Supabase (household_sync)',
-        hosting: 'Atoms.dev / Vercel',
-        ai: 'Gemini Flash, Web Speech API'
+      "id": "main",
+      "sotId": "ebe1c8a4-ed61-475d-8960-b97e50ff0128",
+      "workspace": "yorlio",
+      "name": "📈 Yorlio main",
+      "desc": "Primary Yorlio workstream for cross-agent sync",
+      "status": "active",
+      "health": "green",
+      "priority": "high",
+      "rowVersion": 2,
+      "currentPhase": 1,
+      "stack": {
+        "frontend": "Cross-agent hub",
+        "backend": "—",
+        "database": "Supabase agent_sync",
+        "hosting": "—",
+        "ai": "Grok + Gemini"
       },
-      tools: [
-        { tool: 'Gemini API', role: '廣東話轉禮貌印尼文翻譯' },
-        { tool: 'Supabase', role: 'Room Code 跨手機即時同步' }
-      ]
+      "tools": [],
+      "latestSummary": "Dashboard UI fully aligned: restored 6 projects matrix with full-stack definitions.",
+      "blockersCount": 0
     },
     {
-      id: 'trading-bot',
-      name: '🤖 智能交易訊號 Bot',
-      desc: '自動化交易策略回測、Webhook 訊號接收與風險控管執行',
-      status: 'active',
-      health: 'green',
-      currentPhase: 2,
-      stack: {
-        frontend: 'CLI / Webhook 服務',
-        backend: 'Python FastAPI',
-        database: 'SQLite / JSON Log',
-        hosting: 'AWS / Local Server',
-        ai: 'Grok / Cursor'
+      "id": "path-a-self-host",
+      "sotId": "1ac8ce25-a5bf-47a2-92a1-2a0fd00f5ea7",
+      "workspace": "yorlio",
+      "name": "🚀 Path A self-host migration",
+      "desc": "Vite React + FastAPI + Postgres; leave Atoms; Cloudflare Pages + Fly staging",
+      "status": "active",
+      "health": "green",
+      "priority": "high",
+      "rowVersion": 2,
+      "currentPhase": 2,
+      "stack": {
+        "frontend": "Vite React (Pages)",
+        "backend": "FastAPI / Fly",
+        "database": "foqgydlgzjsdwclsbimu",
+        "hosting": "CF Pages + Fly",
+        "ai": "PM / Github Expert"
       },
-      tools: [
-        { tool: 'Grok / Cursor', role: '策略邏輯與 Python 腳本編寫' },
-        { tool: 'CCXT', role: '交易所 API 對接' }
-      ]
+      "tools": [],
+      "latestSummary": "York staging user role set to admin (DB UPDATE). Refresh/re-login for Admin Panel.",
+      "blockersCount": 0
     },
     {
-      id: 'global-price',
-      name: '🛒 全球格價平台 (香港客戶)',
-      desc: '比較全球電商與香港到手總成本、運費關稅透明化',
-      status: 'review',
-      health: 'yellow',
-      currentPhase: 1,
-      stack: {
-        frontend: 'Atoms.dev UI',
-        backend: 'Gemini Function Calling',
-        database: 'LocalStorage',
-        hosting: 'GitHub Pages',
-        ai: 'Gemini API'
+      "id": "sot-dashboard",
+      "sotId": "c1df9973-2375-4679-94d9-6b76772b185a",
+      "workspace": "agent-meta",
+      "name": "⚡ Agent Sync + Dashboard",
+      "desc": "agent_sync schema on yorlio-staging; GitHub Pages command center",
+      "status": "active",
+      "health": "green",
+      "priority": "high",
+      "rowVersion": 1,
+      "currentPhase": 1,
+      "stack": {
+        "frontend": "GitHub Pages",
+        "backend": "MCP SQL",
+        "database": "agent_sync",
+        "hosting": "github.io",
+        "ai": "Sync Expert"
       },
-      tools: [
-        { tool: 'Atoms.dev', role: '多來源搜尋與總成本介面' },
-        { tool: 'Gemini API', role: '規格對應與風險警示' }
-      ]
-    },
-    {
-      id: 'ai-youtube',
-      name: '🎬 AI YouTube 自動化媒體工廠',
-      desc: 'AI 視覺流水線、兒童卡通 Shorts 與 Google Trends 分析',
-      status: 'active',
-      health: 'green',
-      currentPhase: 3,
-      stack: {
-        frontend: '視覺生成控制台',
-        backend: 'Python / Cloud Render',
-        database: 'Local Media Storage',
-        hosting: 'Local / Cloud',
-        ai: 'Kling AI, Runway Gen-3, Gemini'
-      },
-      tools: [
-        { tool: 'Kling / Runway', role: '動態視覺與特效生成' },
-        { tool: 'Gemini', role: '爆款關鍵字與腳本' }
-      ]
+      "tools": [],
+      "latestSummary": "agent_sync schema live; contract+skill distributed; dashboard refresh in progress",
+      "blockersCount": 0
     }
   ],
-  tasks: [
+  "tasks": [
     {
-      id: 't_bot_1',
-      projectId: 'trading-bot',
-      phase: 2,
-      title: '【Trading Bot】自動化策略架構與 Webhook 接收端建置',
-      status: 'in-progress',
-      aiTool: 'Grok / Cursor'
+      "id": "a184ffef-805e-483d-9237-2f6a48416e29",
+      "projectId": "path-a-self-host",
+      "title": "assetlinks.json for Play TWA",
+      "body": "com.yorlio.myapp needs /.well-known/assetlinks.json; SHA-256 from Android Expert 1:1",
+      "status": "blocked",
+      "sotStatus": "blocked",
+      "isBlocker": true,
+      "priority": "high",
+      "aiTool": "Project Manager",
+      "blockedReason": "Needs Play App Signing SHA-256 from York/Android Expert"
     },
     {
-      id: 't_kakak_1',
-      projectId: 'halo-kakak',
-      phase: 2,
-      title: '【Halo Kakak】廣東話語音轉地道印尼文與常用家務詞庫實作',
-      status: 'in-progress',
-      aiTool: 'Gemini API'
+      "id": "c168cd23-0ee9-4d2b-970a-fcca09f3a62e",
+      "projectId": "household",
+      "title": "Enable RLS on _phase1_sql_staging",
+      "body": "halo-kakak table _phase1_sql_staging was observed without RLS (anon key could read/write). Harden ASAP.",
+      "status": "todo",
+      "sotStatus": "open",
+      "isBlocker": true,
+      "priority": "critical",
+      "aiTool": "Supabase Sync Expert",
+      "blockedReason": "Table still missing RLS per Sync Expert review"
+    },
+    {
+      "id": "26bde846-a663-4694-adfb-51ce16169283",
+      "projectId": "sot-dashboard",
+      "title": "Keep agent_sync SoT current for all bots",
+      "body": "Bots must follow Agent Sync Read-Write skill: read before work, write_log after. Gemini has no service_role — Sync Expert relays snapshots.",
+      "status": "in-progress",
+      "sotStatus": "in_progress",
+      "isBlocker": false,
+      "priority": "high",
+      "aiTool": "Supabase Sync Expert",
+      "blockedReason": ""
+    },
+    {
+      "id": "df513f5c-3a24-4ba4-937e-45629f092db5",
+      "projectId": "sot-dashboard",
+      "title": "Refresh GitHub Pages dashboard from SoT",
+      "body": "Update yorkleung0512-ops/ai-dashboard index.html from agent_sync (not invented Gemini matrix).",
+      "status": "in-progress",
+      "sotStatus": "in_progress",
+      "isBlocker": false,
+      "priority": "high",
+      "aiTool": "Supabase Sync Expert",
+      "blockedReason": ""
+    },
+    {
+      "id": "845fc78c-dc90-4e6a-8416-659e54125215",
+      "projectId": "path-a-self-host",
+      "title": "Remaining staging secrets / keys",
+      "body": "From yorlio-staging-prep STATUS: R2 avatars bucket+token, DeepSeek, Resend, Google OAuth staging redirect confirm, Stripe test keys. Do not merge PR #1; do not touch prod DNS.",
+      "status": "todo",
+      "sotStatus": "open",
+      "isBlocker": false,
+      "priority": "high",
+      "aiTool": "Project Manager",
+      "blockedReason": ""
+    },
+    {
+      "id": "068d410b-0012-4b21-8695-65e54a1dead0",
+      "projectId": "path-a-self-host",
+      "title": "Do not merge PR #1 / no prod DNS yet",
+      "body": "self-host/m1-readiness → main stays open until York says merge",
+      "status": "todo",
+      "sotStatus": "open",
+      "isBlocker": false,
+      "priority": "high",
+      "aiTool": "Project Manager",
+      "blockedReason": ""
+    },
+    {
+      "id": "04492641-260a-405e-a393-c7e0ade4a25e",
+      "projectId": "path-a-self-host",
+      "title": "York next pick: staging domain vs assetlinks",
+      "body": "Hang staging.yorlio.com (+noindex) OR ask Android/Github for assetlinks PR (needs Play App Signing SHA-256)",
+      "status": "done",
+      "sotStatus": "done",
+      "isBlocker": true,
+      "priority": "high",
+      "aiTool": "Project Manager",
+      "blockedReason": "Waiting York decision"
+    },
+    {
+      "id": "a7f2564c-99c7-44c7-8abc-6766d49b2a97",
+      "projectId": "path-a-self-host",
+      "title": "Hang staging.yorlio.com + noindex",
+      "body": "Pages custom domain, DNS records, noindex; verify Fly CORS/OAuth. No apex DNS / no merge PR #1.\n\n[2026-10-19 HKT] Done by Github Expert: Pages custom domain active; CF CNAME staging→yorlio-com.pages.dev (proxied); X-Robots-Tag noindex via CF transform rule; Fly CORS verified for staging Origin; OAuth redirect URIs listed for York (Google Console).",
+      "status": "done",
+      "sotStatus": "done",
+      "isBlocker": false,
+      "priority": "high",
+      "aiTool": "Github Expert",
+      "blockedReason": ""
+    }
+  ],
+  "decisions": [
+    {
+      "id": "f5c3056a-4efe-4f02-b4d0-74985a527d77",
+      "projectId": "sot-dashboard",
+      "title": "agent_sync lives on yorlio-staging",
+      "decision": "Use yorlio-staging (foqgydlgzjsdwclsbimu) schema agent_sync as cross-agent SoT; dedicated free project blocked by 2-project free limit.",
+      "status": "accepted",
+      "agent": "Supabase Sync Expert"
+    },
+    {
+      "id": "f62800bc-d1ec-466b-94fa-f28cb08d0f8a",
+      "projectId": "path-a-self-host",
+      "title": "Next step: hang staging.yorlio.com",
+      "decision": "Hang staging.yorlio.com with noindex; defer assetlinks; no PR #1 merge; no apex DNS change; staging Stripe stays test-only",
+      "status": "accepted",
+      "agent": "Project Manager"
+    },
+    {
+      "id": "4ea86351-dd2c-4d5c-98ea-f13b601b0342",
+      "projectId": "path-a-self-host",
+      "title": "Leave Atoms → Path A self-host",
+      "decision": "Path A: Vite React + FastAPI + Postgres; Atoms frozen after push to GitHub main",
+      "status": "accepted",
+      "agent": "Project Manager"
+    },
+    {
+      "id": "d2c5c4f1-4236-4c30-b4fb-82910d0f1c56",
+      "projectId": "path-a-self-host",
+      "title": "Stripe account",
+      "decision": "KEEP Limited live acct_1UQRXzAMkz6JOIul; staging stays test; live keys/webhook only at cutover",
+      "status": "accepted",
+      "agent": "Project Manager"
+    }
+  ],
+  "links": [
+    {
+      "id": "96b1ec75-20c2-4f05-b41a-ab12866d0658",
+      "projectId": "main",
+      "label": "York AI Projects Command Center",
+      "url": "https://yorkleung0512-ops.github.io/ai-dashboard/",
+      "linkType": "dashboard"
+    },
+    {
+      "id": "421a146a-0be5-4487-a686-5a2f9d716d8d",
+      "projectId": "path-a-self-host",
+      "label": "staging.yorlio.com",
+      "url": "https://staging.yorlio.com",
+      "linkType": "deploy"
+    },
+    {
+      "id": "bd72e5bc-4364-47bb-b293-737f8e4e0f1d",
+      "projectId": "path-a-self-host",
+      "label": "GitHub repo",
+      "url": "https://github.com/yorkleung0512-ops/yorlio.com",
+      "linkType": "github"
+    },
+    {
+      "id": "2019c35d-c227-49ff-8eb7-58fb96e117f2",
+      "projectId": "path-a-self-host",
+      "label": "PR #1 self-host/m1-readiness",
+      "url": "https://github.com/yorkleung0512-ops/yorlio.com/pull/1",
+      "linkType": "github"
+    },
+    {
+      "id": "67375d08-905d-406f-a6b4-e4119ec2c26c",
+      "projectId": "path-a-self-host",
+      "label": "Pages staging",
+      "url": "https://yorlio-com.pages.dev",
+      "linkType": "deploy"
+    },
+    {
+      "id": "2eb915f7-2d4b-4614-a13b-7376420ecf43",
+      "projectId": "path-a-self-host",
+      "label": "Fly API staging",
+      "url": "https://yorlio-api-staging.fly.dev",
+      "linkType": "deploy"
+    }
+  ],
+  "environments": [
+    {
+      "id": "90f396f2-da86-4a47-886f-e4239c691bb4",
+      "projectId": "path-a-self-host",
+      "name": "fly-api-staging",
+      "kind": "staging",
+      "provider": "fly",
+      "url": "https://yorlio-api-staging.fly.dev",
+      "health": "healthy"
+    },
+    {
+      "id": "c101b0f7-ec9e-4e44-b5e6-8a5c69d1e927",
+      "projectId": "path-a-self-host",
+      "name": "pages-staging",
+      "kind": "staging",
+      "provider": "cloudflare-pages",
+      "url": "https://staging.yorlio.com",
+      "health": "healthy"
+    },
+    {
+      "id": "a4c080fe-2796-4307-89eb-a9bbbf86a769",
+      "projectId": "path-a-self-host",
+      "name": "supabase-staging",
+      "kind": "staging",
+      "provider": "supabase",
+      "url": null,
+      "health": "healthy"
     }
   ]
 };
 
+const STORAGE_KEY = 'york_ai_dash_sot_v7';
 let state = DEFAULT_DATA;
 try {
-  const local = localStorage.getItem('york_ai_dash_sot_v6all');
-  if (local) state = JSON.parse(local);
-} catch (e) {
-  state = DEFAULT_DATA;
-}
+  const local = localStorage.getItem(STORAGE_KEY);
+  if (local) {
+    const parsed = JSON.parse(local);
+    // Prefer embedded SoT if newer export
+    if (!parsed.sotMeta || !DEFAULT_DATA.sotMeta || parsed.sotMeta.exportedAt < DEFAULT_DATA.sotMeta.exportedAt) {
+      state = DEFAULT_DATA;
+      localStorage.removeItem(STORAGE_KEY);
+    } else {
+      state = parsed;
+    }
+  }
+} catch (e) { state = DEFAULT_DATA; }
 
 let currentTab = 'focus';
 let activeProject = 'ALL';
-
-let ghConfig = {
-  owner: 'yorkleung0512-ops',
-  repo: 'ai-dashboard',
-  branch: 'main',
-  token: ''
-};
+let ghConfig = { owner: 'yorkleung0512-ops', repo: 'ai-dashboard', branch: 'main', token: '' };
 try {
   const localGh = localStorage.getItem('york_gh_config_v2');
   if (localGh) ghConfig = JSON.parse(localGh);
 } catch (e) {}
 
 function save() {
-  try {
-    localStorage.setItem('york_ai_dash_sot_v6all', JSON.stringify(state));
-  } catch (e) {}
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
   render();
   if (ghConfig.token) pushToGitHub(false);
 }
@@ -327,67 +477,33 @@ function updateSyncUI(status, msg) {
     el.innerText = '⚠️ 同步失敗: ' + (msg || '');
   } else {
     el.className = 'text-[11px] px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800';
-    el.innerText = ghConfig.token ? '⚡ 已配置 Token' : '⚠️ 未配置 Token (僅本機)';
+    el.innerText = ghConfig.token ? '⚡ 已配置 Token' : '📦 SoT embedded';
   }
 }
 
 async function pushToGitHub(showAlert = false) {
-  if (!ghConfig.token) {
-    if (showAlert) openModal();
-    return;
-  }
+  if (!ghConfig.token) { if (showAlert) openModal(); return; }
   updateSyncUI('syncing');
-
   try {
     const timestamp = Date.now();
     const url = `https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}/contents/index.html?ref=${ghConfig.branch}&_t=${timestamp}`;
-    const headers = {
-      'Authorization': `Bearer ${ghConfig.token}`,
-      'Accept': 'application/vnd.github.v3+json'
-    };
-
+    const headers = { 'Authorization': `Bearer ${ghConfig.token}`, 'Accept': 'application/vnd.github.v3+json' };
     const getRes = await fetch(url, { headers, cache: 'no-store' });
-    let currentSha = null;
-    let remoteContent = '';
-
+    let currentSha = null, remoteContent = '';
     if (getRes.ok) {
       const data = await getRes.json();
       currentSha = data.sha;
       remoteContent = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
-    } else if (getRes.status !== 404) {
-      throw new Error(`無法連接 Repo (Status: ${getRes.status})`);
-    }
-
+    } else if (getRes.status !== 404) throw new Error(`無法連接 Repo (Status: ${getRes.status})`);
     let baseHtml = remoteContent || document.documentElement.outerHTML;
     const stateMarkerRegex = /(const DEFAULT_DATA = )\{[\s\S]*?\n\};/;
-    if (stateMarkerRegex.test(baseHtml)) {
-      baseHtml = baseHtml.replace(stateMarkerRegex, `$1${JSON.stringify(state, null, 2)};`);
-    }
-
+    if (stateMarkerRegex.test(baseHtml)) baseHtml = baseHtml.replace(stateMarkerRegex, `$1${JSON.stringify(state, null, 2)};`);
     const utf8Bytes = new TextEncoder().encode(baseHtml);
-    let binary = '';
-    utf8Bytes.forEach(b => binary += String.fromCharCode(b));
-    const base64Content = btoa(binary);
-
-    const putUrl = `https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}/contents/index.html`;
-    const body = {
-      message: 'Dashboard Auto-sync: ' + new Date().toLocaleString(),
-      content: base64Content,
-      branch: ghConfig.branch
-    };
+    let binary = ''; utf8Bytes.forEach(b => binary += String.fromCharCode(b));
+    const body = { message: 'Dashboard SoT sync: ' + new Date().toISOString(), content: btoa(binary), branch: ghConfig.branch };
     if (currentSha) body.sha = currentSha;
-
-    const putRes = await fetch(putUrl, {
-      method: 'PUT',
-      headers,
-      body: JSON.stringify(body)
-    });
-
-    if (!putRes.ok) {
-      const err = await putRes.json();
-      throw new Error(err.message || '寫入失敗');
-    }
-
+    const putRes = await fetch(`https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}/contents/index.html`, { method: 'PUT', headers, body: JSON.stringify(body) });
+    if (!putRes.ok) { const err = await putRes.json(); throw new Error(err.message || '寫入失敗'); }
     updateSyncUI('synced');
     if (showAlert) alert('已成功推送至 GitHub！');
   } catch (err) {
@@ -398,183 +514,221 @@ async function pushToGitHub(showAlert = false) {
 
 function openModal() {
   const modal = document.getElementById('ghModal');
-  if (modal) {
-    document.getElementById('ghOwner').value = ghConfig.owner || 'yorkleung0512-ops';
-    document.getElementById('ghRepo').value = ghConfig.repo || 'ai-dashboard';
-    document.getElementById('ghBranch').value = ghConfig.branch || 'main';
-    document.getElementById('ghToken').value = ghConfig.token || '';
-    modal.style.display = 'flex';
-  }
+  if (!modal) return;
+  document.getElementById('ghOwner').value = ghConfig.owner || 'yorkleung0512-ops';
+  document.getElementById('ghRepo').value = ghConfig.repo || 'ai-dashboard';
+  document.getElementById('ghBranch').value = ghConfig.branch || 'main';
+  document.getElementById('ghToken').value = ghConfig.token || '';
+  modal.style.display = 'flex';
 }
-function closeModal() {
-  const modal = document.getElementById('ghModal');
-  if (modal) modal.style.display = 'none';
-}
-
+function closeModal() { const m = document.getElementById('ghModal'); if (m) m.style.display = 'none'; }
 function filterProject(id) { activeProject = id; render(); }
 
 function setTab(tab) {
   currentTab = tab;
-  ['tabFocus', 'tabKanban', 'tabRoadmap'].forEach(id => {
+  const map = { focus: 'tabFocus', kanban: 'tabKanban', decisions: 'tabDecisions', links: 'tabLinks' };
+  Object.entries(map).forEach(([k, id]) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const active = (tab === 'focus' && id === 'tabFocus') ||
-                   (tab === 'kanban' && id === 'tabKanban') ||
-                   (tab === 'roadmap' && id === 'tabRoadmap');
-    el.className = active
+    el.className = (tab === k)
       ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm'
-      : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer';
+      : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 cursor-pointer';
   });
   render();
 }
 
+function statusBadge(status) {
+  if (status === 'active' || status === 'shipping') return '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-500/30">🟢 ' + status + '</span>';
+  if (status === 'blocked') return '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-500/30">🔴 blocked</span>';
+  if (status === 'archived' || status === 'done') return '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-400 border border-slate-500/30">⬛ ' + status + '</span>';
+  return '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-500/30">🟡 ' + status + '</span>';
+}
+
+function healthDot(h) {
+  if (h === 'green' || h === 'healthy') return '🟢';
+  if (h === 'yellow' || h === 'degraded') return '🟡';
+  if (h === 'red' || h === 'down') return '🔴';
+  return '⚪';
+}
+
 function renderTaskCard(t) {
   const proj = state.projects.find(p => p.id === t.projectId) || { name: t.projectId };
+  const blocker = t.isBlocker && t.status !== 'done'
+    ? '<span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold">BLOCKER</span>'
+    : '';
+  const reason = t.blockedReason ? `<div class="text-[11px] text-amber-400/90">⛔ ${t.blockedReason}</div>` : '';
   return `
-    <div class="panze-card rounded-xl p-4 space-y-3">
-      <div class="flex items-center justify-between">
+    <div class="panze-card rounded-xl p-4 space-y-3 ${t.isBlocker && t.status !== 'done' ? 'ring-1 ring-rose-500/40' : ''}">
+      <div class="flex items-center justify-between gap-2">
         <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950/80 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-800">${proj.name}</span>
-        <span class="text-xs text-slate-400 font-mono">${t.status}</span>
+        <div class="flex items-center gap-1.5">${blocker}<span class="text-xs text-slate-400 font-mono">${t.status}</span></div>
       </div>
       <h4 class="font-bold text-sm text-slate-900 dark:text-white">${t.title}</h4>
-      <div class="text-[11px] text-slate-400">負責 AI: <span class="mono text-indigo-400">${t.aiTool || 'AI'}</span></div>
-    </div>
-  `;
+      ${t.body ? `<p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3">${t.body}</p>` : ''}
+      ${reason}
+      <div class="text-[11px] text-slate-400">負責: <span class="mono text-indigo-400">${t.aiTool || 'AI'}</span></div>
+    </div>`;
 }
 
 function render() {
+  const meta = state.sotMeta || {};
+  const blockers = (state.tasks || []).filter(t => t.isBlocker && t.status !== 'done').length;
+  const openTasks = (state.tasks || []).filter(t => ['todo','in-progress','blocked'].includes(t.status)).length;
+  const healthLabel = blockers ? `Yellow (${blockers} blockers)` : 'Green';
+
+  const banner = document.getElementById('sotBanner');
+  if (banner) {
+    banner.innerHTML = `
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full ${blockers ? 'bg-amber-400' : 'bg-emerald-400'} animate-pulse"></span>
+        <span class="text-indigo-200 font-medium">Canonical SoT: <span class="mono text-white">yorlio-staging / agent_sync</span></span>
+      </div>
+      <div class="flex flex-wrap items-center gap-3 text-slate-400 mono text-[11px]">
+        <span>WS <strong class="text-slate-200">${meta.workspaceCount || 0}</strong></span>
+        <span>Projects <strong class="text-indigo-300">${meta.projectCount || state.projects.length}</strong></span>
+        <span>Open <strong class="text-slate-200">${openTasks}</strong></span>
+        <span>Blockers <strong class="${blockers ? 'text-amber-300' : 'text-emerald-400'}">${blockers}</strong></span>
+        <span>Decisions <strong class="text-slate-200">${(state.decisions||[]).length}</strong></span>
+        <span class="text-slate-500">export ${meta.exportedAt || ''}</span>
+      </div>`;
+  }
+
   const kpiEl = document.getElementById('kpiOverview');
   if (kpiEl) {
     kpiEl.innerHTML = `
-      <div class="panze-card rounded-xl p-3.5 space-y-1">
-        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">SoT Blockers</span>
-        <div class="text-xl font-bold text-emerald-500">0 阻礙</div>
-      </div>
-      <div class="panze-card rounded-xl p-3.5 space-y-1">
-        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">進行中任務</span>
-        <div class="text-xl font-bold text-slate-900 dark:text-white">${state.tasks.length} 個</div>
-      </div>
-      <div class="panze-card rounded-xl p-3.5 space-y-1">
-        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">活躍專案規模</span>
-        <div class="text-xl font-bold text-indigo-500">${state.projects.length} 個 (全開)</div>
-      </div>
-      <div class="panze-card rounded-xl p-3.5 space-y-1">
-        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">SoT 資料庫狀態</span>
-        <div class="text-xl font-bold text-emerald-400">Green (正常)</div>
-      </div>
-    `;
+      <div class="panze-card rounded-xl p-3.5 space-y-1"><span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">SoT Blockers</span><div class="text-xl font-bold ${blockers ? 'text-amber-400' : 'text-emerald-500'}">${blockers} 阻礙</div></div>
+      <div class="panze-card rounded-xl p-3.5 space-y-1"><span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">進行中 / 未完成</span><div class="text-xl font-bold text-slate-900 dark:text-white">${openTasks} 個</div></div>
+      <div class="panze-card rounded-xl p-3.5 space-y-1"><span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">SoT Projects</span><div class="text-xl font-bold text-indigo-500">${state.projects.length} 個</div></div>
+      <div class="panze-card rounded-xl p-3.5 space-y-1"><span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">整體健康</span><div class="text-xl font-bold ${blockers ? 'text-amber-400' : 'text-emerald-400'}">${healthLabel}</div></div>`;
   }
+
+  const hdr = document.getElementById('projectsHeader');
+  if (hdr) hdr.innerText = `SoT Projects (${state.projects.length})`;
 
   const pGrid = document.getElementById('projectGrid');
   if (pGrid) {
     pGrid.innerHTML = state.projects.map(p => {
       const isSelected = activeProject === p.id;
       const stack = p.stack || {};
-      const badge = p.status === 'active' 
-        ? '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-500/30">🟢 Active</span>'
-        : '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-500/30">🟡 Review</span>';
-
       return `
         <div onclick="filterProject('${p.id}')" class="panze-card cursor-pointer rounded-xl p-4 transition relative flex flex-col justify-between ${isSelected ? 'border-indigo-500 ring-2 ring-indigo-500/30' : ''}">
           <div class="space-y-2.5">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between gap-2">
               <span class="font-bold text-sm text-slate-900 dark:text-white">${p.name}</span>
-              ${badge}
+              ${statusBadge(p.status)}
             </div>
             <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">${p.desc}</p>
+            ${p.latestSummary ? `<p class="text-[11px] text-slate-400 italic">最新: ${p.latestSummary}</p>` : ''}
             <div class="bg-slate-900/60 rounded-lg p-2.5 border border-slate-800/80 space-y-1 text-[11px] mono">
+              <div><span class="text-slate-400">WS:</span> <span class="text-slate-200">${p.workspace || '-'}</span> · health ${healthDot(p.health)} ${p.health || '-'}</div>
               <div><span class="text-slate-400">Front:</span> <span class="text-slate-200">${stack.frontend || '-'}</span></div>
               <div><span class="text-slate-400">DB:</span> <span class="text-slate-200">${stack.database || '-'}</span></div>
               <div><span class="text-indigo-400">AI:</span> <span class="text-emerald-400 font-semibold">${stack.ai || '-'}</span></div>
             </div>
           </div>
-        </div>
-      `;
+        </div>`;
     }).join('');
   }
 
   const sel = document.getElementById('newProject');
-  if (sel) {
-    sel.innerHTML = state.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-  }
-
+  if (sel) sel.innerHTML = state.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
   const fLabel = document.getElementById('filterLabel');
-  if (fLabel) {
-    fLabel.innerText = activeProject === 'ALL' ? `顯示全部 Projects (${state.projects.length})` : `已過濾專案: ${activeProject}`;
-  }
+  if (fLabel) fLabel.innerText = activeProject === 'ALL' ? `顯示全部 Projects (${state.projects.length})` : `已過濾: ${activeProject}`;
 
   const container = document.getElementById('viewContainer');
   if (!container) return;
-
   const filtered = activeProject === 'ALL' ? state.tasks : state.tasks.filter(t => t.projectId === activeProject);
-  
+
   if (currentTab === 'focus') {
-    container.innerHTML = filtered.length > 0 
+    container.innerHTML = filtered.length
       ? `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${filtered.map(renderTaskCard).join('')}</div>`
-      : `<div class="panze-card rounded-xl p-8 text-center text-xs text-slate-400">目前沒有進行中的任務</div>`;
+      : `<div class="panze-card rounded-xl p-8 text-center text-xs text-slate-400">目前沒有任務（SoT 為空則保持空白）</div>`;
   } else if (currentTab === 'kanban') {
-    const cols = [{ key: 'todo', label: '📋 To Do' }, { key: 'in-progress', label: '⚡ In Progress' }, { key: 'done', label: '✅ Done' }];
-    container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">${cols.map(c => `
+    const cols = [
+      { key: 'todo', label: '📋 To Do' },
+      { key: 'in-progress', label: '⚡ In Progress' },
+      { key: 'blocked', label: '⛔ Blocked' },
+      { key: 'done', label: '✅ Done' }
+    ];
+    container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">${cols.map(c => `
       <div class="panze-card rounded-xl p-3.5 space-y-3">
         <div class="font-bold text-xs text-slate-700 dark:text-slate-300 px-1 flex items-center justify-between">
           <span>${c.label}</span>
-          <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-950 text-slate-500 dark:text-slate-400">${filtered.filter(t => t.status === c.key).length}</span>
+          <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-950 text-slate-500">${filtered.filter(t => t.status === c.key).length}</span>
         </div>
-        <div class="space-y-3">${filtered.filter(t => t.status === c.key).map(renderTaskCard).join('')}</div>
-      </div>
-    `).join('')}</div>`;
-  } else if (currentTab === 'roadmap') {
+        <div class="space-y-3">${filtered.filter(t => t.status === c.key).map(renderTaskCard).join('') || '<div class="text-[11px] text-slate-500 px-1">空</div>'}</div>
+      </div>`).join('')}</div>`;
+  } else if (currentTab === 'decisions') {
+    const decs = (state.decisions || []).filter(d => activeProject === 'ALL' || d.projectId === activeProject);
+    container.innerHTML = decs.length ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${decs.map(d => `
+      <div class="panze-card rounded-xl p-4 space-y-2">
+        <div class="flex justify-between gap-2"><span class="text-[11px] font-semibold text-indigo-300">${d.projectId}</span><span class="text-[10px] mono text-emerald-400">${d.status}</span></div>
+        <h4 class="font-bold text-sm text-white">${d.title}</h4>
+        <p class="text-xs text-slate-300 leading-relaxed">${d.decision}</p>
+        <div class="text-[11px] text-slate-500">by ${d.agent}</div>
+      </div>`).join('')}</div>` : `<div class="panze-card rounded-xl p-8 text-center text-xs text-slate-400">No decisions in SoT</div>`;
+  } else if (currentTab === 'links') {
+    const links = (state.links || []).filter(l => activeProject === 'ALL' || l.projectId === activeProject);
+    const envs = (state.environments || []).filter(e => activeProject === 'ALL' || e.projectId === activeProject);
     container.innerHTML = `
-      <div class="panze-card rounded-xl p-5 space-y-3">
-        <h3 class="font-bold text-sm text-white">🚀 全專案階段路線圖 (Phase Roadmap)</h3>
-        <p class="text-xs text-slate-400">當前 6 大專案已統一劃分至 Phase 1 需求定義、Phase 2 MVP 原型與 Phase 3 規模化運營。</p>
-      </div>
-    `;
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">External Links</h3>
+          ${links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" class="panze-card rounded-xl p-3 block hover:border-indigo-500">
+            <div class="text-[10px] mono text-indigo-400">${l.linkType} · ${l.projectId}</div>
+            <div class="font-semibold text-sm text-white">${l.label}</div>
+            <div class="text-[11px] text-slate-500 mono truncate">${l.url}</div>
+          </a>`).join('') || '<div class="text-xs text-slate-500">No links</div>'}
+        </div>
+        <div class="space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Environments</h3>
+          ${envs.map(e => `<div class="panze-card rounded-xl p-3">
+            <div class="flex justify-between"><span class="font-semibold text-sm">${healthDot(e.health)} ${e.name}</span><span class="text-[10px] mono text-slate-400">${e.kind}</span></div>
+            <div class="text-[11px] text-slate-400">${e.provider || ''} · ${e.projectId}</div>
+            ${e.url ? `<a class="text-[11px] text-indigo-400 mono" href="${e.url}" target="_blank" rel="noopener">${e.url}</a>` : ''}
+          </div>`).join('') || '<div class="text-xs text-slate-500">No environments</div>'}
+        </div>
+      </div>`;
   }
 }
 
 window.addEventListener('load', () => {
-  document.getElementById('btnThemeToggle').onclick = () => {
-    document.documentElement.classList.toggle('dark');
-  };
+  document.getElementById('btnThemeToggle').onclick = () => document.documentElement.classList.toggle('dark');
   document.getElementById('btnGhModal').onclick = openModal;
   document.getElementById('btnCloseModal').onclick = closeModal;
   document.getElementById('btnCancelModal').onclick = closeModal;
-
   document.getElementById('btnSaveConfig').onclick = () => {
     ghConfig.owner = document.getElementById('ghOwner').value.trim();
     ghConfig.repo = document.getElementById('ghRepo').value.trim();
     ghConfig.branch = document.getElementById('ghBranch').value.trim();
     ghConfig.token = document.getElementById('ghToken').value.trim();
     localStorage.setItem('york_gh_config_v2', JSON.stringify(ghConfig));
-    closeModal();
-    updateSyncUI();
+    closeModal(); updateSyncUI();
     if (ghConfig.token) pushToGitHub(true);
   };
-
   document.getElementById('btnPush').onclick = () => pushToGitHub(true);
-
   document.getElementById('btnResetFilter').onclick = () => filterProject('ALL');
   document.getElementById('tabFocus').onclick = () => setTab('focus');
   document.getElementById('tabKanban').onclick = () => setTab('kanban');
-  document.getElementById('tabRoadmap').onclick = () => setTab('roadmap');
-
+  document.getElementById('tabDecisions').onclick = () => setTab('decisions');
+  document.getElementById('tabLinks').onclick = () => setTab('links');
   document.getElementById('btnAddTask').onclick = () => {
     const title = document.getElementById('newTitle').value.trim();
     if (!title) return;
-    const projectId = document.getElementById('newProject').value;
-    const aiTool = document.getElementById('newAiTool').value.trim() || 'Gemini';
     state.tasks.unshift({
-      id: 't_' + Date.now(),
-      projectId,
+      id: 'local_' + Date.now(),
+      projectId: document.getElementById('newProject').value,
       title,
+      body: '(local-only; not written to agent_sync)',
       status: 'in-progress',
-      aiTool
+      sotStatus: 'in_progress',
+      isBlocker: false,
+      aiTool: document.getElementById('newAiTool').value.trim() || 'local',
+      blockedReason: ''
     });
     document.getElementById('newTitle').value = '';
     save();
   };
-
   render();
   updateSyncUI();
 });
