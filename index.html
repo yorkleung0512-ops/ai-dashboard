@@ -6,22 +6,16 @@
   <title>York's AI Projects & Toolchain Command Center</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = {
-      darkMode: 'class'
-    }
+    tailwind.config = { darkMode: 'class' }
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', 'Noto Sans TC', sans-serif; transition: background-color 0.2s, color 0.2s; }
     .mono { font-family: 'JetBrains Mono', monospace; }
-    
-    /* 深色主題卡片 */
     html.dark body { background: #070b12; color: #f1f5f9; }
     html.dark .panze-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
     html.dark .panze-card:hover { border-color: rgba(99, 102, 241, 0.6); }
     html.dark .panze-inner { background: rgba(2, 6, 23, 0.6); border-color: rgba(30, 41, 59, 0.8); }
-
-    /* 淺色/白色主題卡片 */
     html:not(.dark) body { background: #f8fafc; color: #0f172a; }
     html:not(.dark) .panze-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
     html:not(.dark) .panze-card:hover { border-color: #6366f1; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.1); }
@@ -29,19 +23,17 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
-  <!-- Header -->
   <header class="border-b border-slate-200 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 backdrop-blur sticky top-0 z-30 px-5 py-3.5 transition-colors">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-bold text-white shadow-md shadow-indigo-500/20">⚡</div>
         <div>
           <h1 class="font-bold text-sm tracking-wide text-slate-900 dark:text-white">PANZE STUDIO // AI COMMAND CENTER</h1>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">Single Source of Truth · Full-Stack & AI Stack Matrix</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Single Source of Truth · Supabase agent_sync 對齊</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
         <span id="syncStatus" class="text-[11px] px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">檢查中...</span>
-        <!-- 主題切換 -->
         <button id="btnThemeToggle" type="button" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium cursor-pointer transition flex items-center gap-1.5">
           <span id="themeIcon">🌙</span>
           <span id="themeText" class="hidden sm:inline">深色模式</span>
@@ -52,202 +44,51 @@
     </div>
   </header>
 
-  <!-- GitHub Config Modal -->
-  <div id="ghModal" style="display: none;" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white">⚙️ GitHub API 自動同步設定</h3>
-        <button id="btnCloseModal" type="button" class="text-slate-400 hover:text-slate-700 dark:hover:text-white text-base font-bold p-1">✕</button>
-      </div>
-      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-        填入 GitHub Token 後，網頁上所有操作均直接透過 API commit 至 Repo，無需手動修改。Token 僅存於本機。
-      </p>
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">Repo Owner</label>
-          <input id="ghOwner" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="yorkleung0512-ops">
-        </div>
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">Repo Name</label>
-          <input id="ghRepo" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="ai-dashboard">
-        </div>
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">Branch</label>
-          <input id="ghBranch" type="text" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono" value="main">
-        </div>
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">Personal Access Token (PAT)</label>
-          <input id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono">
-          <span class="text-[10px] text-slate-400 dark:text-slate-500">需勾選 repo 權限。</span>
-        </div>
-      </div>
-      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-        <button id="btnCancelModal" type="button" class="px-3 py-1.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs">取消</button>
-        <button id="btnSaveConfig" type="button" class="px-3.5 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold">儲存並連接</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 新增專案 Modal (支援 Full-Stack 架構欄位) -->
-  <div id="addProjectModal" style="display: none;" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl max-w-lg w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">🚀 新增全端專案 (Add Full-Stack Project)</h3>
-        <button id="btnCloseProjModal" type="button" class="text-slate-400 hover:text-slate-700 dark:hover:text-white text-base font-bold p-1">✕</button>
-      </div>
-      <div class="space-y-3 text-xs">
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-slate-500 dark:text-slate-400 mb-1">專案代號 (ID)</label>
-            <input id="projNewId" type="text" placeholder="例如: my-app" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono">
-          </div>
-          <div>
-            <label class="block text-slate-500 dark:text-slate-400 mb-1">專案名稱 (含 Emoji)</label>
-            <input id="projNewName" type="text" placeholder="例如: 💡 創新產品" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
-          </div>
-        </div>
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">一句話定位與簡介</label>
-          <input id="projNewDesc" type="text" placeholder="例如: 解決跨境痛點的 AI 應用平台" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-slate-500 dark:text-slate-400 mb-1">Frontend (前端)</label>
-            <input id="projNewFe" type="text" placeholder="例如: React + Tailwind" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
-          </div>
-          <div>
-            <label class="block text-slate-500 dark:text-slate-400 mb-1">Backend (後端)</label>
-            <input id="projNewBe" type="text" placeholder="例如: FastAPI / Serverless" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-slate-500 dark:text-slate-400 mb-1">Database (資料庫)</label>
-            <input id="projNewDb" type="text" placeholder="例如: Supabase (PostgreSQL)" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
-          </div>
-          <div>
-            <label class="block text-slate-500 dark:text-slate-400 mb-1">Hosting (託管部署)</label>
-            <input id="projNewHosting" type="text" placeholder="例如: Vercel / GitHub Pages" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
-          </div>
-        </div>
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">AI Tools & Models (AI 工具與模型)</label>
-          <input id="projNewAi" type="text" placeholder="例如: Gemini API, Claude MCP, Grok" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-slate-500 dark:text-slate-400 mb-1">起始階段</label>
-            <select id="projNewPhase" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
-              <option value="1">Phase 1: 需求釐清</option>
-              <option value="2" selected>Phase 2: MVP 原型</option>
-              <option value="3">Phase 3: 實測反饋</option>
-              <option value="4">Phase 4: 變現驗證</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-slate-500 dark:text-slate-400 mb-1">健康狀態</label>
-            <select id="projNewStatus" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
-              <option value="ontrack">🟢 On Track (順暢)</option>
-              <option value="active" selected>🟡 Active (積極推進)</option>
-              <option value="review">🔴 Review (需覆核)</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-        <button id="btnCancelProjModal" type="button" class="px-3 py-1.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs">取消</button>
-        <button id="btnSaveNewProject" type="button" class="px-4 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold">建立並同步專案</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 新增排程任務 Modal -->
-  <div id="addScheduleModal" style="display: none;" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white">⏰ 新增 AI 排程任務 (Agent Schedule)</h3>
-        <button id="btnCloseSchedModal" type="button" class="text-slate-400 hover:text-slate-700 dark:hover:text-white text-base font-bold p-1">✕</button>
-      </div>
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">任務標題</label>
-          <input id="schedTitle" type="text" placeholder="例如: 每日資產市值自動快照" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-slate-500 dark:text-slate-400 mb-1">執行 AI 代理</label>
-            <select id="schedAgent" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
-              <option value="Gemini">Gemini Spark</option>
-              <option value="Grok">Grok Bot</option>
-              <option value="Claude">Claude MCP</option>
-              <option value="GitHub Action">GitHub Action</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-slate-500 dark:text-slate-400 mb-1">執行頻率</label>
-            <input id="schedFreq" type="text" placeholder="例如: 每日 08:00 / 每小時" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
-          </div>
-        </div>
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">關聯專案</label>
-          <select id="schedProject" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white"></select>
-        </div>
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">任務描述與預期輸出</label>
-          <textarea id="schedDesc" rows="2" placeholder="自動同步多券商持倉並推送到 Supabase..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white"></textarea>
-        </div>
-      </div>
-      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-        <button id="btnCancelSchedModal" type="button" class="px-3 py-1.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs">取消</button>
-        <button id="btnSaveSchedule" type="button" class="px-4 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold">儲存排程</button>
-      </div>
-    </div>
-  </div>
-
   <main class="max-w-7xl w-full mx-auto px-5 py-6 space-y-7 flex-1">
-    <!-- Executive KPI 全局健康指標 -->
+    <!-- SoT 狀態指示欄 -->
+    <div class="bg-indigo-950/30 border border-indigo-500/30 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-indigo-200 font-medium">Canonical SoT: <span class="mono text-white">yorlio-staging</span> (agent_sync)</span>
+      </div>
+      <div class="flex items-center gap-3 text-slate-400 mono text-[11px]">
+        <span>Workspace: <strong class="text-slate-200">yorlio</strong></span>
+        <span>Project: <strong class="text-slate-200">main</strong></span>
+        <span>Blockers: <strong class="text-emerald-400">0</strong></span>
+        <span>Sync: <strong class="text-slate-200">2026-10-20</strong></span>
+      </div>
+    </div>
+
+    <!-- Executive KPI -->
     <section id="kpiOverview" class="grid grid-cols-2 sm:grid-cols-4 gap-3.5"></section>
 
-    <!-- 專案卡片矩陣 (含 Full-Stack & AI Stack) -->
+    <!-- 專案矩陣卡片 -->
     <section>
       <div class="flex items-center justify-between mb-3.5">
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
           <h2 id="projectsHeader" class="text-xs font-bold text-slate-700 dark:text-slate-300 tracking-wider uppercase">Active Projects & Tech Matrix</h2>
         </div>
-        <div class="flex items-center gap-2">
-          <button id="btnOpenAddProject" type="button" class="text-xs px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-medium flex items-center gap-1 shadow-sm transition cursor-pointer">
-            <span>+ 新增全端專案</span>
-          </button>
-          <span class="text-xs text-slate-400 hidden sm:inline">點擊卡片篩選 · 點擊架構標籤過濾</span>
-        </div>
+        <span class="text-xs text-slate-400">點擊卡片過濾專案</span>
       </div>
-      <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4"></div>
+      <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </section>
 
     <!-- 快速建立任務列 -->
     <section class="panze-card rounded-xl p-4 shadow-sm">
       <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5">
         <input id="newTitle" type="text" placeholder="+ 輸入新 Task 標題..." class="md:col-span-4 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-indigo-500 focus:outline-none">
-        <select id="newProject" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-800 dark:text-slate-200"></select>
-        <select id="newPhase" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-800 dark:text-slate-200">
-          <option value="1">Phase 1: 需求釐清</option>
-          <option value="2" selected>Phase 2: MVP 原型</option>
-          <option value="3">Phase 3: 實測反饋</option>
-          <option value="4">Phase 4: 變現驗證</option>
-        </select>
-        <input id="newAiTool" type="text" placeholder="🤖 負責 AI (如 Gemini / Grok)" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-600 dark:text-indigo-300">
+        <select id="newProject" class="md:col-span-3 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-800 dark:text-slate-200"></select>
+        <input id="newAiTool" type="text" placeholder="🤖 負責 AI (如 Gemini / Claude)" class="md:col-span-3 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-600 dark:text-indigo-300">
         <button id="btnAddTask" type="button" class="md:col-span-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg px-3 py-2 text-xs cursor-pointer shadow">新增任務</button>
       </div>
     </section>
 
-    <!-- 看板控制視角 -->
+    <!-- 視角切換器 -->
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800/80 pb-3">
       <div class="flex items-center gap-2">
-        <button id="tabFocus" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm">🔥 焦點任務 (In Progress)</button>
+        <button id="tabFocus" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm">🔥 任務清單 (Tasks)</button>
         <button id="tabKanban" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">🎛️ 完整看板 (Kanban)</button>
-        <button id="tabRoadmap" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">🚀 階段路線圖 (Roadmap)</button>
-        <button id="tabSchedule" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">🤖 AI 排程任務 (Agent Schedule)</button>
       </div>
       <div class="flex items-center gap-2">
         <span id="filterLabel" class="text-xs text-slate-500 dark:text-slate-400">顯示全部 Projects</span>
@@ -255,61 +96,41 @@
       </div>
     </div>
 
-    <!-- 任務與排程內容顯示區 -->
+    <!-- 任務內容區 -->
     <div id="viewContainer"></div>
   </main>
 
 <script>
-const PHASE_NAMES = {
-  1: 'Phase 1: 需求釐清',
-  2: 'Phase 2: MVP 原型',
-  3: 'Phase 3: 實測反饋',
-  4: 'Phase 4: 變現驗證'
-};
-
+// 依據 agent_sync SoT 快照更新預設數據，嚴格杜絕未經證實的假任務
 const DEFAULT_DATA = {
   projects: [
     {
-      id: 'yorlio',
-      name: '📈 Yorlio 財富管理',
-      desc: '跨券商資產追蹤、多幣種折算與客觀風險診斷',
-      status: 'ontrack',
-      currentPhase: 2,
-      stack: {
-        frontend: 'Atoms.dev / HTML5',
-        backend: 'Cloudflare Workers / API',
-        database: 'Supabase (PostgreSQL)',
-        hosting: 'GitHub Pages / Cloudflare',
-        ai: 'Claude MCP, Gemini Flash'
-      },
-      tools: [
-        { tool: 'Atoms.dev', role: 'SaaS 前端原型與 UI' },
-        { tool: 'Claude MCP', role: '持倉 JSON 與風險診斷' }
-      ]
-    },
-    {
-      id: 'growpath',
-      name: '🌱 GrowPath 兒童成長',
-      desc: '結構化問卷 Profile、國際研究框架與精準課程媒合',
+      id: 'main',
+      sotId: 'ebe1c8a4-ed61-475d-8960-b97e50ff0128',
+      workspaceSlug: 'yorlio',
+      name: '📈 Yorlio main',
+      desc: 'Yorlio portfolio app + yorlio.com — migrate off Atoms to Path A self-host',
       status: 'active',
+      health: 'green',
       currentPhase: 2,
       stack: {
-        frontend: 'Lovable / React',
-        backend: 'Vercel Serverless',
-        database: 'Supabase DB',
-        hosting: 'Vercel',
-        ai: 'Gemini API'
+        frontend: 'Path A Self-host / HTML5',
+        backend: 'Cloudflare / Serverless',
+        database: 'Supabase (foqgydlgzjsdwclsbimu)',
+        hosting: 'Cloudflare / Self-host',
+        ai: 'Claude MCP, Gemini'
       },
       tools: [
-        { tool: 'Lovable', role: '問卷結構化與 Dashboard MVP' },
-        { tool: 'Gemini API', role: '強項分析與 30 日計劃生成' }
+        { tool: 'Claude MCP', role: '持倉分析與架構遷移邏輯' },
+        { tool: 'Gemini', role: '跨 Agent 狀態同步與文件驗證' }
       ]
     },
     {
       id: 'halo-kakak',
       name: '🏠 屋企家務通 (Halo Kakak!)',
       desc: '香港僱主與印傭雙語家務管理、廣東話轉地道印尼文、TTS 與跨機即時同步',
-      status: 'ontrack',
+      status: 'active',
+      health: 'green',
       currentPhase: 2,
       stack: {
         frontend: 'React + Tailwind CSS',
@@ -327,10 +148,11 @@ const DEFAULT_DATA = {
       id: 'trading-bot',
       name: '🤖 智能交易訊號 Bot',
       desc: '自動化交易策略回測、Webhook 訊號接收與風險控管執行',
-      status: 'ontrack',
+      status: 'active',
+      health: 'green',
       currentPhase: 2,
       stack: {
-        frontend: '無 (CLI / Webhook 服務)',
+        frontend: 'CLI / Webhook 服務',
         backend: 'Python FastAPI',
         database: 'SQLite / JSON Log',
         hosting: 'AWS / Local Server',
@@ -340,522 +162,87 @@ const DEFAULT_DATA = {
         { tool: 'Grok / Cursor', role: '策略邏輯與 Python 腳本編寫' },
         { tool: 'CCXT', role: '交易所 API 對接' }
       ]
-    },
-    {
-      id: 'global-price',
-      name: '🛒 全球格價平台',
-      desc: '比較全球電商與香港到手總成本、購買可行性透明化',
-      status: 'review',
-      currentPhase: 1,
-      stack: {
-        frontend: 'Atoms.dev UI',
-        backend: 'Gemini Function Calling',
-        database: 'LocalStorage',
-        hosting: 'GitHub Pages',
-        ai: 'Gemini API'
-      },
-      tools: [
-        { tool: 'Atoms.dev', role: '多來源搜尋與總成本介面' },
-        { tool: 'Gemini API', role: '規格對應與風險警示' }
-      ]
-    },
-    {
-      id: 'ai-youtube',
-      name: '🎬 AI YouTube 工廠',
-      desc: 'AI 視覺流水線、兒童卡通 Shorts 與 Trends 研究',
-      status: 'active',
-      currentPhase: 3,
-      stack: {
-        frontend: '網頁生成控制台',
-        backend: 'Python / Cloud Render',
-        database: 'Local Media Storage',
-        hosting: 'Local / Cloud',
-        ai: 'Kling AI, Runway Gen-3, Gemini'
-      },
-      tools: [
-        { tool: 'Kling / Runway', role: '動態視覺與特效生成' },
-        { tool: 'Gemini', role: '爆款關鍵字與腳本' }
-      ]
     }
   ],
-  tasks: [
-    {
-      id: 't_bot_1',
-      projectId: 'trading-bot',
-      phase: 2,
-      title: '【Trading Bot】自動化策略架構與 Webhook 接收端建置',
-      status: 'in-progress',
-      note: '由 Grok 協同編寫 Python 核心接收與驗證機制',
-      promptSnippet: 'Build a secure Python FastAPI webhook endpoint to receive TradingView alert JSON payloads, validate tokens, and route orders via CCXT.',
-      subtasks: [
-        { text: '設計 FastAPI Webhook 接收端與安全驗證', aiTool: 'Grok / Cursor', done: true },
-        { text: '串接 CCXT 交易所測試網 API 進行下單模擬', aiTool: 'CCXT / API', done: false }
-      ]
-    },
-    {
-      id: 't_kakak_1',
-      projectId: 'halo-kakak',
-      phase: 2,
-      title: '【Halo Kakak】廣東話語音轉地道印尼文與常用家務詞庫實作',
-      status: 'in-progress',
-      note: '針對地道廣東話（買餸、百佳、隔塵網）禮貌印尼文輸出',
-      promptSnippet: 'You are a translator for a Hong Kong family and their Indonesian domestic helper. Translate Cantonese household instructions into natural Bahasa Indonesia starting with Tolong.',
-      subtasks: [
-        { text: '定義香港地道家務詞彙 Mapping (買餸/百佳/煲湯)', aiTool: 'Gemini API', done: true },
-        { text: '整合 Web Speech API (zh-HK) 與印尼文 TTS (id-ID)', aiTool: 'Web Speech & TTS', done: true }
-      ]
-    }
-  ],
-  schedules: [
-    {
-      id: 's1',
-      title: 'Dashboard 狀態自動同步與 Git 備份',
-      agent: 'GitHub Action',
-      freq: '每 6 小時 / 每次變動',
-      projectId: 'yorlio',
-      desc: '自動檢查前端狀態並透過 REST API Commit 到 ai-dashboard 倉庫。',
-      active: true
-    },
-    {
-      id: 's2',
-      title: 'Trading Bot 交易所連線狀態心跳檢測 (Heartbeat)',
-      agent: 'Grok',
-      freq: '每 15 分鐘',
-      projectId: 'trading-bot',
-      desc: '測試 CCXT API 網關延遲與 Webhook 監聽埠是否正常運作。',
-      active: true
-    }
-  ]
+  tasks: [] // SoT todos 為空，嚴格維持空陣列
 };
 
-// 安全載入並強制重設為最新 v24 版本
 let state = DEFAULT_DATA;
 try {
-  const local = localStorage.getItem('york_ai_dash_v24');
-  if (local) {
-    const parsed = JSON.parse(local);
-    if (parsed && parsed.projects && parsed.tasks) {
-      state = parsed;
-      if (!state.schedules) state.schedules = DEFAULT_DATA.schedules;
-    }
-  }
+  const local = localStorage.getItem('york_ai_dash_sot_v1');
+  if (local) state = JSON.parse(local);
 } catch (e) {
   state = DEFAULT_DATA;
 }
 
-let ghConfig = {
-  owner: 'yorkleung0512-ops',
-  repo: 'ai-dashboard',
-  branch: 'main',
-  token: ''
-};
-try {
-  const localGh = localStorage.getItem('york_gh_config_v2');
-  if (localGh) ghConfig = JSON.parse(localGh);
-} catch (e) {}
-
 let currentTab = 'focus';
 let activeProject = 'ALL';
-let activeAiToolFilter = 'ALL';
-
-function initTheme() {
-  const savedTheme = localStorage.getItem('york_theme') || 'dark';
-  applyTheme(savedTheme);
-}
-
-function applyTheme(theme) {
-  const html = document.documentElement;
-  const icon = document.getElementById('themeIcon');
-  const text = document.getElementById('themeText');
-  if (theme === 'dark') {
-    html.classList.add('dark');
-    if (icon) icon.innerText = '🌙';
-    if (text) text.innerText = '深色模式';
-  } else {
-    html.classList.remove('dark');
-    if (icon) icon.innerText = '☀️';
-    if (text) text.innerText = '淺色模式';
-  }
-  localStorage.setItem('york_theme', theme);
-}
-
-function toggleTheme() {
-  const isDark = document.documentElement.classList.contains('dark');
-  applyTheme(isDark ? 'light' : 'dark');
-}
 
 function save() {
   try {
-    localStorage.setItem('york_ai_dash_v24', JSON.stringify(state));
-  } catch (e) {
-    console.error('Save error:', e);
-  }
+    localStorage.setItem('york_ai_dash_sot_v1', JSON.stringify(state));
+  } catch (e) {}
   render();
-  if (ghConfig.token) {
-    pushToGitHub(false);
-  }
-}
-
-function updateSyncUI(status, msg) {
-  const el = document.getElementById('syncStatus');
-  if (!el) return;
-  if (status === 'synced') {
-    el.className = 'text-[11px] px-2.5 py-1 rounded bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30';
-    el.innerText = '✅ GitHub 已同步';
-  } else if (status === 'syncing') {
-    el.className = 'text-[11px] px-2.5 py-1 rounded bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-500/30 animate-pulse';
-    el.innerText = '🔄 推送中...';
-  } else if (status === 'error') {
-    el.className = 'text-[11px] px-2.5 py-1 rounded bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-500/30';
-    el.innerText = '⚠️ 同步失敗: ' + (msg || '');
-  } else {
-    el.className = 'text-[11px] px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800';
-    el.innerText = ghConfig.token ? '⚡ 已配置 Token' : '⚠️ 未配置 Token (僅本機)';
-  }
-}
-
-async function pushToGitHub(showAlert = false) {
-  if (!ghConfig.token) {
-    if (showAlert) openModal();
-    return;
-  }
-  updateSyncUI('syncing');
-
-  try {
-    const timestamp = Date.now();
-    const url = `https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}/contents/index.html?ref=${ghConfig.branch}&_t=${timestamp}`;
-    const headers = {
-      'Authorization': `Bearer ${ghConfig.token}`,
-      'Accept': 'application/vnd.github.v3+json'
-    };
-
-    const getRes = await fetch(url, { headers, cache: 'no-store' });
-    let currentSha = null;
-    let remoteContent = '';
-
-    if (getRes.ok) {
-      const data = await getRes.json();
-      currentSha = data.sha;
-      remoteContent = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
-    } else if (getRes.status !== 404) {
-      throw new Error(`無法連接 Repo (Status: ${getRes.status})`);
-    }
-
-    let baseHtml = remoteContent || document.documentElement.outerHTML;
-    const stateMarkerRegex = /(const DEFAULT_DATA = )\{[\s\S]*?\n\};/;
-    if (stateMarkerRegex.test(baseHtml)) {
-      baseHtml = baseHtml.replace(stateMarkerRegex, `$1${JSON.stringify(state, null, 2)};`);
-    }
-
-    const utf8Bytes = new TextEncoder().encode(baseHtml);
-    let binary = '';
-    utf8Bytes.forEach(b => binary += String.fromCharCode(b));
-    const base64Content = btoa(binary);
-
-    const putUrl = `https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}/contents/index.html`;
-    const body = {
-      message: 'Dashboard Auto-sync: ' + new Date().toLocaleString(),
-      content: base64Content,
-      branch: ghConfig.branch
-    };
-    if (currentSha) body.sha = currentSha;
-
-    const putRes = await fetch(putUrl, {
-      method: 'PUT',
-      headers,
-      body: JSON.stringify(body)
-    });
-
-    if (!putRes.ok) {
-      const err = await putRes.json();
-      throw new Error(err.message || '寫入失敗');
-    }
-
-    updateSyncUI('synced');
-    if (showAlert) alert('已成功推送至 GitHub！');
-  } catch (err) {
-    updateSyncUI('error', err.message);
-    if (showAlert) alert('同步失敗: ' + err.message);
-  }
-}
-
-function openModal() {
-  const modal = document.getElementById('ghModal');
-  if (modal) modal.style.display = 'flex';
-}
-function closeModal() {
-  const modal = document.getElementById('ghModal');
-  if (modal) modal.style.display = 'none';
-}
-
-function openAddProjectModal() {
-  const modal = document.getElementById('addProjectModal');
-  if (modal) {
-    document.getElementById('projNewId').value = '';
-    document.getElementById('projNewName').value = '';
-    document.getElementById('projNewDesc').value = '';
-    document.getElementById('projNewFe').value = '';
-    document.getElementById('projNewBe').value = '';
-    document.getElementById('projNewDb').value = '';
-    document.getElementById('projNewHosting').value = '';
-    document.getElementById('projNewAi').value = '';
-    modal.style.display = 'flex';
-  }
-}
-function closeAddProjectModal() {
-  const modal = document.getElementById('addProjectModal');
-  if (modal) modal.style.display = 'none';
-}
-
-function openAddScheduleModal() {
-  const modal = document.getElementById('addScheduleModal');
-  if (modal) {
-    document.getElementById('schedTitle').value = '';
-    document.getElementById('schedFreq').value = '每日 09:00';
-    document.getElementById('schedDesc').value = '';
-    const sel = document.getElementById('schedProject');
-    if (sel) {
-      sel.innerHTML = (state.projects || []).map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-    }
-    modal.style.display = 'flex';
-  }
-}
-function closeAddScheduleModal() {
-  const modal = document.getElementById('addScheduleModal');
-  if (modal) modal.style.display = 'none';
 }
 
 function filterProject(id) { activeProject = id; render(); }
-function filterAiTool(tool) { activeAiToolFilter = tool; render(); }
-function resetAllFilters() { activeProject = 'ALL'; activeAiToolFilter = 'ALL'; render(); }
-
-function setTab(tab) {
-  currentTab = tab;
-  ['tabFocus', 'tabKanban', 'tabRoadmap', 'tabSchedule'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const active = (tab === 'focus' && id === 'tabFocus') ||
-                   (tab === 'kanban' && id === 'tabKanban') ||
-                   (tab === 'roadmap' && id === 'tabRoadmap') ||
-                   (tab === 'schedule' && id === 'tabSchedule');
-    el.className = active
-      ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm'
-      : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer';
-  });
-  render();
-}
-
-function toggleSubtask(taskId, idx) {
-  const t = state.tasks.find(x => x.id === taskId);
-  if (t && t.subtasks[idx]) {
-    t.subtasks[idx].done = !t.subtasks[idx].done;
-    save();
-  }
-}
-function changeStatus(taskId, s) {
-  const t = state.tasks.find(x => x.id === taskId);
-  if (t) { t.status = s; save(); }
-}
-function changePhase(taskId, p) {
-  const t = state.tasks.find(x => x.id === taskId);
-  if (t) { t.phase = parseInt(p); save(); }
-}
-
-function addSubtask(taskId) {
-  const text = prompt('輸入 Sub-task 名稱：');
-  if (!text) return;
-  const aiTool = prompt('負責 AI 工具：', 'Gemini') || 'AI';
-  const t = state.tasks.find(x => x.id === taskId);
-  if (t) {
-    if (!t.subtasks) t.subtasks = [];
-    t.subtasks.push({ text, aiTool, done: false });
-    save();
-  }
-}
-
-function toggleScheduleActive(schedId) {
-  if (!state.schedules) return;
-  const s = state.schedules.find(x => x.id === schedId);
-  if (s) {
-    s.active = !s.active;
-    save();
-  }
-}
-
-function deleteSchedule(schedId) {
-  if (!confirm('確定要刪除這個 AI 排程任務嗎？')) return;
-  state.schedules = (state.schedules || []).filter(x => x.id !== schedId);
-  save();
-}
-
-function copyPromptSnippet(text) {
-  navigator.clipboard.writeText(text);
-  alert('已成功複製 AI Prompt 模板至剪貼簿！');
-}
-
-function getProjectProgress(projId) {
-  const pTasks = (state.tasks || []).filter(t => t.projectId === projId);
-  let total = 0, done = 0;
-  pTasks.forEach(t => {
-    (t.subtasks || []).forEach(s => {
-      total++;
-      if (s.done) done++;
-    });
-  });
-  return total === 0 ? 0 : Math.round((done / total) * 100);
-}
 
 function renderTaskCard(t) {
-  const proj = (state.projects || []).find(p => p.id === t.projectId) || { name: t.projectId };
-  const subHtml = (t.subtasks || []).map((s, i) => `
-    <div class="flex items-start justify-between gap-2 text-xs py-1.5 border-b border-slate-100 dark:border-slate-800/40 last:border-0">
-      <label class="flex items-start gap-2 cursor-pointer flex-1 ${s.done ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}">
-        <input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleSubtask('${t.id}', ${i})" class="mt-0.5 rounded bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-0">
-        <span>${s.text}</span>
-      </label>
-      <button onclick="filterAiTool('${s.aiTool}')" title="點選只過濾 ${s.aiTool} 的任務" class="text-[10px] mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-800 whitespace-nowrap hover:border-indigo-500">${s.aiTool || 'AI'}</button>
-    </div>
-  `).join('');
-
+  const proj = state.projects.find(p => p.id === t.projectId) || { name: t.projectId };
   return `
-    <div class="panze-card rounded-xl p-4 space-y-3.5 transition">
-      <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-1.5">
-          <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950/80 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-800">${proj.name}</span>
-          <select onchange="changePhase('${t.id}', this.value)" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[10px] rounded px-1.5 py-0.5 text-slate-600 dark:text-slate-400">
-            <option value="1" ${t.phase===1?'selected':''}>P1 需求</option>
-            <option value="2" ${t.phase===2?'selected':''}>P2 MVP</option>
-            <option value="3" ${t.phase===3?'selected':''}>P3 實測</option>
-            <option value="4" ${t.phase===4?'selected':''}>P4 變現</option>
-          </select>
-        </div>
-        <select onchange="changeStatus('${t.id}', this.value)" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[11px] rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">
-          <option value="todo" ${t.status==='todo'?'selected':''}>📋 To Do</option>
-          <option value="in-progress" ${t.status==='in-progress'?'selected':''}>⚡ In Progress</option>
-          <option value="done" ${t.status==='done'?'selected':''}>✅ Done</option>
-        </select>
+    <div class="panze-card rounded-xl p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950/80 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-800">${proj.name}</span>
+        <span class="text-xs text-slate-400 font-mono">${t.status}</span>
       </div>
-      <h4 class="font-bold text-sm text-slate-900 dark:text-white leading-snug">${t.title}</h4>
-      
-      ${t.promptSnippet ? `
-        <div class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-500/20 rounded-lg px-2.5 py-1.5">
-          <span class="text-[10px] text-indigo-700 dark:text-indigo-300 font-medium truncate max-w-[220px]">💡 內嵌 AI 開發 Prompt</span>
-          <button onclick="copyPromptSnippet(\`${t.promptSnippet.replace(/`/g, "\\`")}\`)" class="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline font-bold shrink-0">📋 複製 Prompt</button>
-        </div>
-      ` : ''}
-
-      ${t.note ? `<div class="text-[11px] text-amber-800 dark:text-amber-300/90 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-500/20 rounded px-2.5 py-1">📌 ${t.note}</div>` : ''}
-      <div class="space-y-1.5 pt-1 border-t border-slate-100 dark:border-slate-800/80">
-        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
-          <span class="font-medium text-slate-700 dark:text-slate-300">AI Sub-tasks</span>
-          <button onclick="addSubtask('${t.id}')" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 cursor-pointer">+ 新增細項</button>
-        </div>
-        <div class="panze-inner rounded-lg p-2.5 border space-y-0.5">${subHtml}</div>
-      </div>
+      <h4 class="font-bold text-sm text-slate-900 dark:text-white">${t.title}</h4>
+      <div class="text-[11px] text-slate-400">負責 AI: <span class="mono text-indigo-400">${t.aiTool || 'AI'}</span></div>
     </div>
   `;
 }
 
 function render() {
+  // KPI 橫幅
   const kpiEl = document.getElementById('kpiOverview');
   if (kpiEl) {
-    let allSubtasks = 0, doneSubtasks = 0;
-    (state.tasks || []).forEach(t => {
-      (t.subtasks || []).forEach(s => {
-        allSubtasks++;
-        if (s.done) doneSubtasks++;
-      });
-    });
-    const totalTasks = (state.tasks || []).length;
-    const inProgressTasks = (state.tasks || []).filter(t => t.status === 'in-progress').length;
-    const donePercent = allSubtasks === 0 ? 0 : Math.round((doneSubtasks / allSubtasks) * 100);
-    const activeSchedules = (state.schedules || []).filter(s => s.active).length;
-    
-    const toolsSet = new Set();
-    (state.projects || []).forEach(p => (p.tools || []).forEach(t => toolsSet.add(t.tool)));
-
     kpiEl.innerHTML = `
       <div class="panze-card rounded-xl p-3.5 space-y-1">
-        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">總任務 / 焦點</span>
-        <div class="flex items-baseline gap-2">
-          <span class="text-xl font-bold text-slate-900 dark:text-white">${totalTasks}</span>
-          <span class="text-xs font-semibold text-indigo-600 dark:text-indigo-400">⚡ ${inProgressTasks} 進行中</span>
-        </div>
+        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">SoT Blockers</span>
+        <div class="text-xl font-bold text-emerald-500">0 阻礙</div>
       </div>
       <div class="panze-card rounded-xl p-3.5 space-y-1">
-        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">整體 Sub-tasks 完成率</span>
-        <div class="flex items-baseline gap-2">
-          <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400">${donePercent}%</span>
-          <span class="text-xs text-slate-400">(${doneSubtasks}/${allSubtasks})</span>
-        </div>
+        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">SoT 待辦任務</span>
+        <div class="text-xl font-bold text-slate-900 dark:text-white">${state.tasks.length} 個</div>
       </div>
       <div class="panze-card rounded-xl p-3.5 space-y-1">
-        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">活躍排程任務</span>
-        <div class="flex items-baseline gap-2">
-          <span class="text-xl font-bold text-amber-600 dark:text-amber-400">${activeSchedules} 個</span>
-          <span class="text-xs text-slate-400">AI 代理常駐</span>
-        </div>
+        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">已對齊專案</span>
+        <div class="text-xl font-bold text-indigo-500">${state.projects.length} 個</div>
       </div>
       <div class="panze-card rounded-xl p-3.5 space-y-1">
-        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">活躍專案規模</span>
-        <div class="flex items-baseline gap-2">
-          <span class="text-xl font-bold text-violet-600 dark:text-violet-400">${(state.projects || []).length} 個</span>
-          <span class="text-xs text-slate-400">Full-Stack 管理</span>
-        </div>
+        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">SoT 數據健康度</span>
+        <div class="text-xl font-bold text-emerald-400">Green (正常)</div>
       </div>
     `;
   }
 
-  const pHeader = document.getElementById('projectsHeader');
-  if (pHeader) {
-    pHeader.innerText = `Active Projects & Tech Matrix (${(state.projects || []).length} Projects)`;
-  }
-
+  // 專案卡片
   const pGrid = document.getElementById('projectGrid');
   if (pGrid) {
-    pGrid.innerHTML = (state.projects || []).map(p => {
-      const pct = getProjectProgress(p.id);
+    pGrid.innerHTML = state.projects.map(p => {
       const isSelected = activeProject === p.id;
-      const curPhase = p.currentPhase || 1;
-      const stack = p.stack || { frontend: '-', backend: '-', database: '-', hosting: '-', ai: '-' };
-
-      let badgeHtml = '';
-      if (p.status === 'ontrack') {
-        badgeHtml = '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-500/30">🟢 On Track</span>';
-      } else if (p.status === 'review') {
-        badgeHtml = '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-500/30">🔴 Review</span>';
-      } else {
-        badgeHtml = '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-500/30">🟡 Active</span>';
-      }
-
+      const stack = p.stack || {};
       return `
-        <div class="panze-card cursor-pointer rounded-xl p-4 transition relative flex flex-col justify-between ${isSelected ? 'border-indigo-500 ring-2 ring-indigo-500/30 bg-indigo-50/50 dark:bg-indigo-950/20' : ''}">
-          <div class="space-y-2.5" onclick="filterProject('${p.id}')">
-            <div class="flex items-center justify-between gap-1">
-              <span class="font-bold text-sm text-slate-900 dark:text-white truncate">${p.name}</span>
-              ${badgeHtml}
-            </div>
-            <!-- 四階段里程碑 -->
-            <div class="space-y-1">
-              <div class="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                <span>目前階段</span>
-                <span class="text-indigo-600 dark:text-indigo-400 font-bold">${PHASE_NAMES[curPhase]}</span>
-              </div>
-              <div class="grid grid-cols-4 gap-1">
-                ${[1, 2, 3, 4].map(idx => `
-                  <div class="h-1.5 rounded-full ${idx <= curPhase ? 'bg-indigo-500' : 'bg-slate-200 dark:bg-slate-800'} transition-colors"></div>
-                `).join('')}
-              </div>
+        <div onclick="filterProject('${p.id}')" class="panze-card cursor-pointer rounded-xl p-4 transition relative flex flex-col justify-between ${isSelected ? 'border-indigo-500 ring-2 ring-indigo-500/30' : ''}">
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-slate-900 dark:text-white">${p.name}</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-500/30">🟢 Active</span>
             </div>
             <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">${p.desc}</p>
-            
-            <!-- Full-Stack & AI Stack 矩陣 -->
-            <div class="bg-slate-900/60 rounded-lg p-2.5 border border-slate-800/80 space-y-1.5 text-[11px] mono">
-              <div class="flex items-center justify-between"><span class="text-slate-400">🖥️ Front:</span><span class="text-slate-200 font-medium">${stack.frontend}</span></div>
-              <div class="flex items-center justify-between"><span class="text-slate-400">⚙️ Back:</span><span class="text-slate-200 font-medium">${stack.backend}</span></div>
-              <div class="flex items-center justify-between"><span class="text-slate-400">🗄️ DB:</span><span class="text-slate-200 font-medium">${stack.database}</span></div>
-              <div class="flex items-center justify-between"><span class="text-slate-400">☁️ Host:</span><span class="text-slate-200 font-medium">${stack.hosting}</span></div>
-              <div class="flex items-center justify-between border-t border-slate-800 pt-1"><span class="text-indigo-400">🤖 AI Stack:</span><span class="text-emerald-400 font-medium">${stack.ai}</span></div>
+            <div class="bg-slate-900/60 rounded-lg p-2.5 border border-slate-800/80 space-y-1 text-[11px] mono">
+              <div><span class="text-slate-400">Front:</span> <span class="text-slate-200">${stack.frontend}</span></div>
+              <div><span class="text-slate-400">DB:</span> <span class="text-slate-200">${stack.database}</span></div>
+              <div><span class="text-indigo-400">AI:</span> <span class="text-emerald-400">${stack.ai}</span></div>
             </div>
           </div>
         </div>
@@ -865,236 +252,47 @@ function render() {
 
   const sel = document.getElementById('newProject');
   if (sel) {
-    sel.innerHTML = (state.projects || []).map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-  }
-
-  const fLabel = document.getElementById('filterLabel');
-  if (fLabel) {
-    let labelText = `顯示全部 Projects (${(state.projects || []).length})`;
-    if (activeProject !== 'ALL') {
-      const proj = (state.projects || []).find(p => p.id === activeProject);
-      labelText = `已過濾專案: ${proj ? proj.name : activeProject}`;
-    }
-    fLabel.innerText = labelText;
-  }
-
-  let filtered = state.tasks || [];
-  if (activeProject !== 'ALL') {
-    filtered = filtered.filter(t => t.projectId === activeProject);
+    sel.innerHTML = state.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
   }
 
   const container = document.getElementById('viewContainer');
   if (!container) return;
 
-  if (currentTab === 'focus') {
-    const focusTasks = filtered.filter(t => t.status !== 'done');
-    container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${focusTasks.map(renderTaskCard).join('')}</div>`;
-  } else if (currentTab === 'kanban') {
-    const cols = [{ key: 'todo', label: '📋 To Do' }, { key: 'in-progress', label: '⚡ In Progress' }, { key: 'done', label: '✅ Done' }];
-    container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">${cols.map(c => `
-      <div class="panze-card rounded-xl p-3.5 space-y-3">
-        <div class="font-bold text-xs text-slate-700 dark:text-slate-300 px-1 flex items-center justify-between">
-          <span>${c.label}</span>
-          <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-950 text-slate-500 dark:text-slate-400">${filtered.filter(t => t.status === c.key).length}</span>
-        </div>
-        <div class="space-y-3">${filtered.filter(t => t.status === c.key).map(renderTaskCard).join('')}</div>
-      </div>
-    `).join('')}</div>`;
-  } else if (currentTab === 'roadmap') {
-    const phases = [
-      { id: 1, name: 'Phase 1: 需求釐清 & 規格定義', desc: '釐清核心用戶價值主張與資料模型' },
-      { id: 2, name: 'Phase 2: MVP 原型建置', desc: '使用 AI 工具快速完成可走通之 Demo' },
-      { id: 3, name: 'Phase 3: 實測反饋 & 優化', desc: '收集反饋、修復登入與資料計算盲點' },
-      { id: 4, name: 'Phase 4: 變現機制驗證', desc: '上線付費方案、流量獲客與跨通路轉化' }
-    ];
-
+  const filtered = activeProject === 'ALL' ? state.tasks : state.tasks.filter(t => t.projectId === activeProject);
+  if (filtered.length === 0) {
     container.innerHTML = `
-      <div class="space-y-6">
-        ${phases.map(ph => {
-          const phTasks = filtered.filter(t => (t.phase || 2) === ph.id);
-          return `
-            <div class="panze-card rounded-xl p-4 space-y-3 border-l-4 ${ph.id === 2 ? 'border-l-indigo-500' : 'border-l-slate-400'}">
-              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800/80 pb-2">
-                <div>
-                  <h3 class="font-bold text-sm text-slate-900 dark:text-white">${ph.name}</h3>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400">${ph.desc}</p>
-                </div>
-                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300">
-                  ${phTasks.length} 個任務
-                </span>
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                ${phTasks.length > 0 ? phTasks.map(renderTaskCard).join('') : '<div class="text-xs text-slate-400 italic py-2 col-span-full">此階段目前尚無任務</div>'}
-              </div>
-            </div>
-          `;
-        }).join('')}
+      <div class="panze-card rounded-xl p-8 text-center space-y-2">
+        <div class="text-2xl">📋</div>
+        <h3 class="font-bold text-sm text-slate-300">目前 agent_sync 無未結案待辦任務 (Todos is empty)</h3>
+        <p class="text-xs text-slate-500">權威資料庫內目前為 0 Blockers、0 待辦事項。此儀表板已與 SoT 嚴格對齊，不包含任何模擬假任務。</p>
       </div>
     `;
-  } else if (currentTab === 'schedule') {
-    const schedules = state.schedules || [];
-    container.innerHTML = `
-      <div class="space-y-4">
-        <div class="flex items-center justify-between bg-slate-900/40 p-4 rounded-xl border border-slate-800">
-          <div>
-            <h3 class="font-bold text-sm text-white">🤖 AI Agents & Automated Cron Schedules</h3>
-            <p class="text-xs text-slate-400">跨 AI 代理（Gemini、Grok、GitHub Actions）的背景自動化排程任務清單</p>
-          </div>
-          <button onclick="openAddScheduleModal()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow cursor-pointer">
-            + 新增排程任務
-          </button>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          ${schedules.map(s => {
-            const proj = (state.projects || []).find(p => p.id === s.projectId) || { name: '全域協同' };
-            return `
-              <div class="panze-card rounded-xl p-4 space-y-3 relative flex flex-col justify-between">
-                <div class="space-y-2">
-                  <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-500/30">${s.agent}</span>
-                    <button onclick="toggleScheduleActive('${s.id}')" class="text-xs px-2 py-0.5 rounded font-bold cursor-pointer ${s.active ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'}">
-                      ${s.active ? '🟢 運行中 (Active)' : '⚪ 已停用'}
-                    </button>
-                  </div>
-                  <h4 class="font-bold text-sm text-slate-900 dark:text-white">${s.title}</h4>
-                  <p class="text-xs text-slate-500 dark:text-slate-400">${s.desc}</p>
-                </div>
-                <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
-                  <span class="text-indigo-500 dark:text-indigo-400 mono font-medium">⏱️ ${s.freq}</span>
-                  <div class="flex items-center gap-2">
-                    <span class="text-[11px] text-slate-400">${proj.name}</span>
-                    <button onclick="deleteSchedule('${s.id}')" class="text-slate-400 hover:text-rose-500 p-1">🗑️</button>
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-    `;
+  } else {
+    container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${filtered.map(renderTaskCard).join('')}</div>`;
   }
 }
 
 window.addEventListener('load', () => {
-  initTheme();
-  document.getElementById('btnThemeToggle').onclick = toggleTheme;
-
-  document.getElementById('btnGhModal').onclick = openModal;
-  document.getElementById('btnCloseModal').onclick = closeModal;
-  document.getElementById('btnCancelModal').onclick = closeModal;
-
-  document.getElementById('btnSaveConfig').onclick = () => {
-    ghConfig.owner = document.getElementById('ghOwner').value.trim();
-    ghConfig.repo = document.getElementById('ghRepo').value.trim();
-    ghConfig.branch = document.getElementById('ghBranch').value.trim();
-    ghConfig.token = document.getElementById('ghToken').value.trim();
-    localStorage.setItem('york_gh_config_v2', JSON.stringify(ghConfig));
-    closeModal();
-    updateSyncUI();
-    if (ghConfig.token) pushToGitHub(true);
+  document.getElementById('btnThemeToggle').onclick = () => {
+    document.documentElement.classList.toggle('dark');
   };
-
-  document.getElementById('btnPush').onclick = () => pushToGitHub(true);
-
-  document.getElementById('btnOpenAddProject').onclick = openAddProjectModal;
-  document.getElementById('btnCloseProjModal').onclick = closeAddProjectModal;
-  document.getElementById('btnCancelProjModal').onclick = closeAddProjectModal;
-
-  document.getElementById('btnSaveNewProject').onclick = () => {
-    const id = document.getElementById('projNewId').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
-    const name = document.getElementById('projNewName').value.trim();
-    const desc = document.getElementById('projNewDesc').value.trim();
-    const frontend = document.getElementById('projNewFe').value.trim() || '-';
-    const backend = document.getElementById('projNewBe').value.trim() || '-';
-    const database = document.getElementById('projNewDb').value.trim() || '-';
-    const hosting = document.getElementById('projNewHosting').value.trim() || '-';
-    const ai = document.getElementById('projNewAi').value.trim() || 'Gemini API';
-    const currentPhase = parseInt(document.getElementById('projNewPhase').value) || 2;
-    const status = document.getElementById('projNewStatus').value || 'active';
-
-    if (!id || !name) {
-      alert('請填寫專案代號 (ID) 與專案名稱！');
-      return;
-    }
-    if (state.projects.some(p => p.id === id)) {
-      alert(`專案代號 "${id}" 已經存在，請換一個！`);
-      return;
-    }
-
-    if (!state.projects) state.projects = [];
-    state.projects.push({
-      id,
-      name,
-      desc: desc || '自主開發專案',
-      currentPhase,
-      status,
-      stack: { frontend, backend, database, hosting, ai },
-      tools: [{ tool: ai.split(',')[0].trim(), role: '核心 AI 支援' }]
-    });
-
-    closeAddProjectModal();
-    save();
-  };
-
-  document.getElementById('btnCloseSchedModal').onclick = closeAddScheduleModal;
-  document.getElementById('btnCancelSchedModal').onclick = closeAddScheduleModal;
-
-  document.getElementById('btnSaveSchedule').onclick = () => {
-    const title = document.getElementById('schedTitle').value.trim();
-    const agent = document.getElementById('schedAgent').value;
-    const freq = document.getElementById('schedFreq').value.trim() || '每日 09:00';
-    const projectId = document.getElementById('schedProject').value;
-    const desc = document.getElementById('schedDesc').value.trim();
-
-    if (!title) {
-      alert('請輸入排程任務標題！');
-      return;
-    }
-
-    if (!state.schedules) state.schedules = [];
-    state.schedules.push({
-      id: 's_' + Date.now(),
-      title,
-      agent,
-      freq,
-      projectId,
-      desc: desc || 'AI 代理自動執行任務',
-      active: true
-    });
-
-    closeAddScheduleModal();
-    save();
-  };
-
+  document.getElementById('btnResetFilter').onclick = () => filterProject('ALL');
   document.getElementById('btnAddTask').onclick = () => {
     const title = document.getElementById('newTitle').value.trim();
     if (!title) return;
     const projectId = document.getElementById('newProject').value;
-    const phase = parseInt(document.getElementById('newPhase').value) || 2;
     const aiTool = document.getElementById('newAiTool').value.trim() || 'Gemini';
-    if (!state.tasks) state.tasks = [];
     state.tasks.unshift({
       id: 't_' + Date.now(),
       projectId,
-      phase,
       title,
       status: 'in-progress',
-      note: '',
-      subtasks: [{ text: '落實執行方針', aiTool, done: false }]
+      aiTool
     });
     document.getElementById('newTitle').value = '';
-    document.getElementById('newAiTool').value = '';
     save();
   };
-
-  document.getElementById('tabFocus').onclick = () => setTab('focus');
-  document.getElementById('tabKanban').onclick = () => setTab('kanban');
-  document.getElementById('tabRoadmap').onclick = () => setTab('roadmap');
-  document.getElementById('tabSchedule').onclick = () => setTab('schedule');
-  document.getElementById('btnResetFilter').onclick = resetAllFilters;
-
   render();
-  updateSyncUI();
 });
 </script>
 </body>
