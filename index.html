@@ -44,7 +44,7 @@
           <span id="themeText" class="hidden sm:inline">深色模式</span>
         </button>
         <button id="btnConfigModal" type="button" class="text-xs px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium cursor-pointer transition">⚙️ 雲端設定 (Supabase & GitHub)</button>
-        <button id="btnPush" type="button" class="text-xs px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-md shadow-indigo-600/25 cursor-pointer transition">💾 立即推送</button>
+        <button id="btnForceReset" type="button" class="text-xs px-2.5 py-1.5 rounded-lg bg-rose-950/30 hover:bg-rose-900/50 text-rose-300 border border-rose-800/40 font-medium cursor-pointer transition" title="當畫面異常時一鍵復原預設">🔄 重設快取</button>
       </div>
     </div>
   </header>
@@ -67,11 +67,6 @@
         <div>
           <label class="block text-slate-500 dark:text-slate-400 mb-1">Supabase Anon Public Key</label>
           <input id="sbKey" type="password" placeholder="eyJhbGciOi..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono">
-        </div>
-        <hr class="border-slate-200 dark:border-slate-800 my-2">
-        <div>
-          <label class="block text-slate-500 dark:text-slate-400 mb-1">GitHub Personal Access Token (選填備份用)</label>
-          <input id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono">
         </div>
       </div>
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
@@ -104,7 +99,6 @@
           <input id="projNewDesc" type="text" placeholder="例如: 結合 Claude MCP 與 WhatsApp API 的自動化客服流程" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white">
         </div>
         
-        <!-- 專案連結配置 -->
         <div class="grid grid-cols-3 gap-2.5 bg-slate-50 dark:bg-slate-950/60 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800">
           <div>
             <label class="block text-slate-500 dark:text-slate-400 mb-1">🌐 Production URL</label>
@@ -143,4 +137,874 @@
           <label class="block text-slate-500 dark:text-slate-400 mb-1">
             專用 AI 工具鏈 (每行格式: <span class="mono text-indigo-500">工具名稱: 負責角色</span>)
           </label>
-          <textarea id="projNewTools" rows="2" placeholder="Grok Build: 策略與變更集生成&#10;Futu OpenD: 模擬行情與下單接口" class="w-full
+          <textarea id="projNewTools" rows="2" placeholder="Grok Build: 策略與變更集生成&#10;Futu OpenD: 模擬行情與下單接口" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded px-3 py-2 text-slate-900 dark:text-white mono"></textarea>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+        <button id="btnCancelProjModal" type="button" class="px-3 py-1.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs">取消</button>
+        <button id="btnSaveNewProject" type="button" class="px-4 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold">建立並同步專案</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="max-w-7xl w-full mx-auto px-5 py-6 space-y-7 flex-1">
+    <!-- Executive KPI 全局健康指標 -->
+    <section id="kpiOverview" class="grid grid-cols-2 sm:grid-cols-4 gap-3.5"></section>
+
+    <!-- 專案卡片矩陣與四階段里程碑進度 -->
+    <section>
+      <div class="flex items-center justify-between mb-3.5">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          <h2 id="projectsHeader" class="text-xs font-bold text-slate-700 dark:text-slate-300 tracking-wider uppercase">Active Projects & Phase Tracker</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btnOpenAddProject" type="button" class="text-xs px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-medium flex items-center gap-1 shadow-sm transition cursor-pointer">
+            <span>+ 新增專案</span>
+          </button>
+          <span class="text-xs text-slate-400 hidden sm:inline">點擊卡片篩選 · 點擊 AI 工具可全域過濾</span>
+        </div>
+      </div>
+      <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+    </section>
+
+    <!-- 快速建立任務列 -->
+    <section class="panze-card rounded-xl p-4 shadow-sm">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5">
+        <input id="newTitle" type="text" placeholder="+ 輸入新 Task 標題..." class="md:col-span-4 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-indigo-500 focus:outline-none">
+        <select id="newProject" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-800 dark:text-slate-200"></select>
+        <select id="newPhase" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-800 dark:text-slate-200">
+          <option value="1">Phase 1: 需求釐清</option>
+          <option value="2" selected>Phase 2: MVP 原型</option>
+          <option value="3">Phase 3: 實測反饋</option>
+          <option value="4">Phase 4: 變現驗證</option>
+        </select>
+        <input id="newAiTool" type="text" placeholder="🤖 負責 AI (如 Supabase Realtime)" class="md:col-span-2 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-indigo-600 dark:text-indigo-300">
+        <button id="btnAddTask" type="button" class="md:col-span-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg px-3 py-2 text-xs cursor-pointer shadow">新增任務</button>
+      </div>
+    </section>
+
+    <!-- 看板控制視角 (焦點 / 看板 / 路線圖) -->
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800/80 pb-3">
+      <div class="flex items-center gap-2">
+        <button id="tabFocus" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm">🔥 焦點任務 (In Progress)</button>
+        <button id="tabKanban" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">🎛️ 完整看板 (Kanban)</button>
+        <button id="tabRoadmap" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">🚀 階段路線圖 (Roadmap)</button>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="filterLabel" class="text-xs text-slate-500 dark:text-slate-400">顯示全部 Projects</span>
+        <button id="btnResetFilter" type="button" class="text-xs px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 cursor-pointer">重設過濾</button>
+      </div>
+    </div>
+
+    <!-- 任務內容卡片區 -->
+    <div id="viewContainer"></div>
+  </main>
+
+<script>
+const PHASE_NAMES = {
+  1: 'Phase 1: 需求釐清',
+  2: 'Phase 2: MVP 原型',
+  3: 'Phase 3: 實測反饋',
+  4: 'Phase 4: 變現驗證'
+};
+
+const DEFAULT_DATA = {
+  projects: [
+    {
+      id: 'agent-sync',
+      name: '🔄 Agent Sync (跨 Agent 狀態中樞)',
+      desc: '以 Supabase 為 Canonical SoT，整合 Realtime WebSocket 與 GitHub 自動備份，支援多 Agent 狀態對齊',
+      status: 'ontrack',
+      currentPhase: 2,
+      prodUrl: 'https://yorkleung0512-ops.github.io/ai-dashboard/',
+      testUrl: '',
+      githubRepo: 'yorkleung0512-ops/ai-dashboard',
+      tools: [
+        { tool: 'Supabase Realtime', role: '核心狀態中樞 (Canonical SoT) 與 WebSocket 廣播' },
+        { tool: 'GitHub REST API', role: '版本控制、GitHub Pages 部署與快照備份' },
+        { tool: 'Multi-Agent Bridge', role: 'Grok / Claude / Gemini 跨平台狀態對齊與樂觀鎖控制' }
+      ]
+    },
+    {
+      id: 'halo-kakak',
+      name: '🏠 屋企家務通 (Halo Kakak!)',
+      desc: '香港僱主與印傭雙語家務管理、廣東話轉地道印尼文、TTS 與跨機即時同步',
+      status: 'ontrack',
+      currentPhase: 2,
+      prodUrl: 'https://halo-kakak.pages.dev/',
+      testUrl: 'https://halo-kakak.pages.dev/?mode=kakak',
+      githubRepo: 'yorkleung0512-ops/halo-kakak',
+      tools: [
+        { tool: 'Atoms.dev / Bolt', role: '雙語模式切換與 Mobile-first 介面' },
+        { tool: 'Gemini API', role: '香港地道廣東話轉禮貌印尼文翻譯' },
+        { tool: 'Web Speech & TTS', role: 'zh-HK 語音輸入與 id-ID 語音朗讀' },
+        { tool: 'Supabase', role: '免登入 Room Code 跨手機雙向即時同步' }
+      ]
+    },
+    {
+      id: 'hk-paper-bot',
+      name: '📈 港股全自動模擬交易系統',
+      desc: '規則式趨勢策略、富途 OpenAPI 模擬帳戶、Python/PostgreSQL/Docker 架構',
+      status: 'active',
+      currentPhase: 3,
+      prodUrl: '',
+      testUrl: 'http://localhost:11111',
+      githubRepo: 'workspace/hk-paper-bot',
+      tools: [
+        { tool: 'Grok Build', role: '策略實作與 Milestone 變更集生成' },
+        { tool: 'Futu OpenD', role: '港股行情與模擬交易 (SIMULATE)' },
+        { tool: 'Python / Pytest', role: '程式運行、CI secret-scan 與 chaos tests' }
+      ]
+    },
+    {
+      id: 'yorlio',
+      name: '📈 Yorlio 財富管理',
+      desc: '跨券商資產追蹤、多幣種折算與客觀風險診斷',
+      status: 'ontrack',
+      currentPhase: 2,
+      prodUrl: 'https://yorlio.com',
+      testUrl: 'https://grannhiywmmbuqdbpydu.supabase.co',
+      githubRepo: 'yorkleung0512-ops/yolio',
+      tools: [
+        { tool: 'Atoms.dev', role: 'SaaS 前端原型與 UI' },
+        { tool: 'Claude MCP', role: '持倉 JSON 與風險診斷' },
+        { tool: 'Cloudflare', role: 'SEO 與 Landing Copy' },
+        { tool: 'Capacitor', role: 'iOS/Android 原生容器' }
+      ]
+    },
+    {
+      id: 'growpath',
+      name: '🌱 GrowPath 兒童成長',
+      desc: '結構化問卷 Profile、國際研究框架與精準課程媒合',
+      status: 'active',
+      currentPhase: 2,
+      prodUrl: '',
+      testUrl: 'https://growpath-hk-dev.supabase.co',
+      githubRepo: '',
+      tools: [
+        { tool: 'Lovable', role: '問卷結構化與 Dashboard MVP' },
+        { tool: 'Gemini API', role: '強項分析與 30 日計劃生成' },
+        { tool: 'Supabase', role: 'Profile 儲存與每週回顧' }
+      ]
+    },
+    {
+      id: 'global-price',
+      name: '🛒 全球格價平台',
+      desc: '比較全球電商與香港到手總成本、購買可行性透明化',
+      status: 'review',
+      currentPhase: 1,
+      prodUrl: '',
+      testUrl: '',
+      githubRepo: '',
+      tools: [
+        { tool: 'Atoms.dev', role: '多來源搜尋與總成本分項介面' },
+        { tool: 'Gemini API', role: '規格對應與購買風險警示' }
+      ]
+    },
+    {
+      id: 'ai-youtube',
+      name: '🎬 AI YouTube 工廠',
+      desc: 'AI 視覺流水線、兒童卡通 Shorts 與 Trends 研究',
+      status: 'active',
+      currentPhase: 3,
+      prodUrl: '',
+      testUrl: '',
+      githubRepo: '',
+      tools: [
+        { tool: 'Google Flow / Kling', role: '角色一致性 Seed 生成' },
+        { tool: 'Runway Gen-3', role: '高質感動態視覺與特效' },
+        { tool: 'Gemini', role: '爆款關鍵字與高留存腳本' }
+      ]
+    }
+  ],
+  tasks: [
+    {
+      id: 't_kakak_1',
+      projectId: 'halo-kakak',
+      phase: 2,
+      title: '【Halo Kakak】廣東話語音轉地道印尼文與常用家務詞庫實作',
+      status: 'in-progress',
+      note: '針對地道廣東話（買餸、百佳、隔塵網、煲湯）禮貌印尼文輸出',
+      promptSnippet: 'You are a translator for a Hong Kong family and their Indonesian domestic helper. Translate the following Hong Kong Cantonese household instructions into clear, polite, and natural Bahasa Indonesia starting with Tolong.',
+      subtasks: [
+        { text: '定義香港地道家務詞彙 Mapping (買餸/百佳/煲湯)', aiTool: 'Gemini API', done: true },
+        { text: '整合 Web Speech API (zh-HK) 與印尼文 TTS (id-ID)', aiTool: 'Web Speech & TTS', done: true },
+        { text: '微調 Gemini 翻譯 Prompt 確保語氣親切有禮 (Tolong...)', aiTool: 'Gemini API', done: false }
+      ]
+    },
+    {
+      id: 't_sync_1',
+      projectId: 'agent-sync',
+      phase: 2,
+      title: '【Agent Sync】Supabase Realtime SoT 與 Schema 權限鎖定',
+      status: 'in-progress',
+      note: '以 ai_dashboard_state / agent_sync 為標準資料表，啟用 RLS 與 WebSocket 廣播',
+      promptSnippet: 'Configure Supabase table ai_dashboard_state as the single source of truth, enabling RLS policies and Realtime broadcast for multi-agent synchronization.',
+      subtasks: [
+        { text: '建立與驗證 ai_dashboard_state / agent_sync 資料表結構', aiTool: 'Supabase Realtime', done: true },
+        { text: '配置 Realtime 廣播通道與樂觀鎖（Optimistic Concurrency）機制', aiTool: 'Supabase Realtime', done: true },
+        { text: '排查匿名金鑰（Anon Key）存取權限與 RLS Policy', aiTool: 'Supabase Realtime', done: false }
+      ]
+    },
+    {
+      id: 't_bot_1',
+      projectId: 'hk-paper-bot',
+      phase: 3,
+      title: '執行 OpenD SIMULATE Integration Gate V1 (Phase B 唯讀驗證)',
+      status: 'in-progress',
+      note: '強制鎖定 TRD_ENV=SIMULATE、過濾 SIMULATE+HK+STOCK 帳戶、排查 TO-VERIFY',
+      promptSnippet: 'Run Phase B read-only validation against local OpenD, verify get_acc_list() filtering, quote permissions, and log redaction without placing any order.',
+      subtasks: [
+        { text: '確認 OpenD 連線、行情上下文及 clean shutdown', aiTool: 'Futu OpenD', done: true },
+        { text: '執行 get_acc_list() 精確過濾 SIMULATE + HK + STOCK 帳戶及穩定的 acc_id', aiTool: 'Python / Pytest', done: false },
+        { text: '驗證 K 線歷史、手數、行情權限及隱私 Log 遮蔽', aiTool: 'Python / Pytest', done: false }
+      ]
+    },
+    {
+      id: 't_yorlio_1',
+      projectId: 'yorlio',
+      phase: 2,
+      title: 'Yorlio 着陸頁重構與跨券商痛點呈現',
+      status: 'in-progress',
+      note: '聚焦香港/亞洲跨境 DIY 投資者痛點',
+      promptSnippet: 'Design a high-converting SaaS landing page hero section for Yorlio.com focusing on cross-brokerage portfolio tracking (BOCHK, Futu) and automated concentration risk alerts.',
+      subtasks: [
+        { text: '重構 Hero 主標題與 CTA 階層', aiTool: 'Atoms.dev', done: true },
+        { text: '設計跨券商（BOCHK / 富途）資產整合預覽圖', aiTool: 'Atoms.dev', done: false },
+        { text: '撰寫金融痛點 Copywriting 與免責說明', aiTool: 'Claude MCP', done: false }
+      ]
+    }
+  ]
+};
+
+// 健壯資料清理函數：防止任何缺失或損壞欄位引發致命渲染中斷
+function sanitizeState(data) {
+  if (!data || typeof data !== 'object') return DEFAULT_DATA;
+  const rawProjects = Array.isArray(data.projects) && data.projects.length > 0 ? data.projects : DEFAULT_DATA.projects;
+  const rawTasks = Array.isArray(data.tasks) ? data.tasks : DEFAULT_DATA.tasks;
+
+  const cleanProjects = rawProjects.map(p => {
+    let prodUrl = p.prodUrl || '';
+    let testUrl = p.testUrl || '';
+    let githubRepo = p.githubRepo || '';
+    if (p.id === 'halo-kakak') {
+      if (!prodUrl) prodUrl = 'https://halo-kakak.pages.dev/';
+      if (!testUrl) testUrl = 'https://halo-kakak.pages.dev/?mode=kakak';
+      if (!githubRepo) githubRepo = 'yorkleung0512-ops/halo-kakak';
+    }
+
+    return {
+      id: p.id || 'proj_' + Math.random().toString(36).substring(2, 7),
+      name: p.name || '未命名專案',
+      desc: p.desc || '',
+      status: p.status || 'active',
+      currentPhase: Number(p.currentPhase) || 2,
+      prodUrl: prodUrl,
+      testUrl: testUrl,
+      githubRepo: githubRepo,
+      tools: Array.isArray(p.tools) ? p.tools : [{ tool: 'AI Tool', role: '輔助開發' }]
+    };
+  });
+
+  const cleanTasks = rawTasks.map(t => ({
+    id: t.id || 't_' + Math.random().toString(36).substring(2, 7),
+    projectId: t.projectId || (cleanProjects[0] ? cleanProjects[0].id : 'agent-sync'),
+    phase: Number(t.phase) || 2,
+    title: t.title || '待辦事項',
+    status: t.status || 'todo',
+    note: t.note || '',
+    promptSnippet: t.promptSnippet || '',
+    subtasks: Array.isArray(t.subtasks) ? t.subtasks : []
+  }));
+
+  return { projects: cleanProjects, tasks: cleanTasks };
+}
+
+// 綁定最新乾淨版本 Storage Key
+const STORAGE_KEY = 'york_ai_dashboard_master_v1';
+let state = DEFAULT_DATA;
+try {
+  const local = localStorage.getItem(STORAGE_KEY);
+  if (local) {
+    state = sanitizeState(JSON.parse(local));
+  }
+} catch (e) {
+  state = DEFAULT_DATA;
+}
+
+let syncConfig = {
+  sbUrl: '',
+  sbKey: ''
+};
+try {
+  const localCfg = localStorage.getItem('york_cloud_config_v1');
+  if (localCfg) syncConfig = { ...syncConfig, ...JSON.parse(localCfg) };
+} catch (e) {}
+
+let supabaseClient = null;
+let currentTab = 'focus';
+let activeProject = 'ALL';
+let activeAiToolFilter = 'ALL';
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('york_theme') || 'dark';
+  applyTheme(savedTheme);
+}
+
+function applyTheme(theme) {
+  const html = document.documentElement;
+  const icon = document.getElementById('themeIcon');
+  const text = document.getElementById('themeText');
+  if (theme === 'dark') {
+    html.classList.add('dark');
+    if (icon) icon.innerText = '🌙';
+    if (text) text.innerText = '深色模式';
+  } else {
+    html.classList.remove('dark');
+    if (icon) icon.innerText = '☀️';
+    if (text) text.innerText = '淺色模式';
+  }
+  localStorage.setItem('york_theme', theme);
+}
+
+function toggleTheme() {
+  const isDark = document.documentElement.classList.contains('dark');
+  applyTheme(isDark ? 'light' : 'dark');
+}
+
+function updateSyncUI(status, msg) {
+  const el = document.getElementById('syncStatus');
+  if (!el) return;
+  if (status === 'realtime') {
+    el.className = 'text-[11px] px-2.5 py-1 rounded bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30';
+    el.innerText = '⚡ Supabase Realtime 連線中';
+  } else if (status === 'syncing') {
+    el.className = 'text-[11px] px-2.5 py-1 rounded bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-500/30 animate-pulse';
+    el.innerText = '🔄 推送中...';
+  } else if (status === 'error') {
+    el.className = 'text-[11px] px-2.5 py-1 rounded bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-500/30';
+    el.innerText = '⚠️ 同步警報: ' + (msg || '');
+  } else {
+    el.className = 'text-[11px] px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800';
+    el.innerText = syncConfig.sbUrl ? '⚡ Supabase 就緒' : '⚠️ 本地儲存 (未連線 Supabase)';
+  }
+}
+
+async function initSupabaseHub() {
+  if (!syncConfig.sbUrl || !syncConfig.sbKey) {
+    updateSyncUI('local');
+    return;
+  }
+  try {
+    supabaseClient = window.supabase.createClient(syncConfig.sbUrl, syncConfig.sbKey);
+    
+    const { data, error } = await supabaseClient
+      .from('ai_dashboard_state')
+      .select('payload')
+      .eq('id', 'primary_dashboard')
+      .single();
+
+    if (!error && data && data.payload) {
+      state = sanitizeState(data.payload);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      render();
+    }
+
+    supabaseClient
+      .channel('public:ai_dashboard_state')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'ai_dashboard_state' }, (payload) => {
+        if (payload.new && payload.new.payload) {
+          state = sanitizeState(payload.new.payload);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          render();
+          updateSyncUI('realtime');
+        }
+      })
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          updateSyncUI('realtime');
+        }
+      });
+  } catch (err) {
+    console.error('Supabase Init Error:', err);
+    updateSyncUI('error', 'Supabase 連線失敗');
+  }
+}
+
+async function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  render();
+
+  if (supabaseClient) {
+    updateSyncUI('syncing');
+    try {
+      const { error } = await supabaseClient
+        .from('ai_dashboard_state')
+        .upsert({
+          id: 'primary_dashboard',
+          payload: state,
+          updated_at: new Date().toISOString()
+        });
+      if (error) throw error;
+      updateSyncUI('realtime');
+    } catch (err) {
+      console.error(err);
+      updateSyncUI('error', 'Supabase 上傳失敗');
+    }
+  }
+}
+
+function openConfigModal() {
+  document.getElementById('sbUrl').value = syncConfig.sbUrl || '';
+  document.getElementById('sbKey').value = syncConfig.sbKey || '';
+  document.getElementById('configModal').style.display = 'flex';
+}
+function closeConfigModal() {
+  document.getElementById('configModal').style.display = 'none';
+}
+
+function openAddProjectModal() {
+  document.getElementById('projNewId').value = '';
+  document.getElementById('projNewName').value = '';
+  document.getElementById('projNewDesc').value = '';
+  document.getElementById('projNewProdUrl').value = '';
+  document.getElementById('projNewTestUrl').value = '';
+  document.getElementById('projNewGithub').value = '';
+  document.getElementById('projNewTools').value = '';
+  document.getElementById('addProjectModal').style.display = 'flex';
+}
+function closeAddProjectModal() {
+  document.getElementById('addProjectModal').style.display = 'none';
+}
+
+function filterProject(id) { activeProject = id; render(); }
+function filterAiTool(tool) { activeAiToolFilter = tool; render(); }
+function resetAllFilters() { activeProject = 'ALL'; activeAiToolFilter = 'ALL'; render(); }
+
+function setTab(tab) {
+  currentTab = tab;
+  ['tabFocus', 'tabKanban', 'tabRoadmap'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const active = (tab === 'focus' && id === 'tabFocus') ||
+                   (tab === 'kanban' && id === 'tabKanban') ||
+                   (tab === 'roadmap' && id === 'tabRoadmap');
+    el.className = active
+      ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white cursor-pointer shadow-sm'
+      : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer';
+  });
+  render();
+}
+
+function toggleSubtask(taskId, idx) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (t && t.subtasks && t.subtasks[idx]) {
+    t.subtasks[idx].done = !t.subtasks[idx].done;
+    save();
+  }
+}
+function changeStatus(taskId, s) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (t) { t.status = s; save(); }
+}
+function changePhase(taskId, p) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (t) { t.phase = parseInt(p); save(); }
+}
+
+function addSubtask(taskId) {
+  const text = prompt('輸入 Sub-task 名稱：');
+  if (!text) return;
+  const aiTool = prompt('負責 AI 工具：', 'Supabase Realtime') || 'AI';
+  const t = state.tasks.find(x => x.id === taskId);
+  if (t) {
+    if (!Array.isArray(t.subtasks)) t.subtasks = [];
+    t.subtasks.push({ text, aiTool, done: false });
+    save();
+  }
+}
+
+function copyPromptSnippet(text) {
+  navigator.clipboard.writeText(text);
+  alert('已成功複製 AI Prompt 模板至剪貼簿！');
+}
+
+function getProjectProgress(projId) {
+  const pTasks = (state.tasks || []).filter(t => t.projectId === projId);
+  let total = 0, done = 0;
+  pTasks.forEach(t => {
+    (t.subtasks || []).forEach(s => {
+      total++;
+      if (s.done) done++;
+    });
+  });
+  return total === 0 ? 0 : Math.round((done / total) * 100);
+}
+
+function renderTaskCard(t) {
+  const proj = (state.projects || []).find(p => p.id === t.projectId) || { name: t.projectId };
+  const subHtml = (t.subtasks || []).map((s, i) => `
+    <div class="flex items-start justify-between gap-2 text-xs py-1.5 border-b border-slate-100 dark:border-slate-800/40 last:border-0">
+      <label class="flex items-start gap-2 cursor-pointer flex-1 ${s.done ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}">
+        <input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleSubtask('${t.id}', ${i})" class="mt-0.5 rounded bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-0">
+        <span>${s.text}</span>
+      </label>
+      <button onclick="filterAiTool('${s.aiTool}')" title="點選只過濾 ${s.aiTool} 的任務" class="text-[10px] mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-800 whitespace-nowrap hover:border-indigo-500">${s.aiTool || 'AI'}</button>
+    </div>
+  `).join('');
+
+  return `
+    <div class="panze-card rounded-xl p-4 space-y-3.5 transition">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950/80 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-800">${proj.name}</span>
+          <select onchange="changePhase('${t.id}', this.value)" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[10px] rounded px-1.5 py-0.5 text-slate-600 dark:text-slate-400">
+            <option value="1" ${t.phase===1?'selected':''}>P1 需求</option>
+            <option value="2" ${t.phase===2?'selected':''}>P2 MVP</option>
+            <option value="3" ${t.phase===3?'selected':''}>P3 實測</option>
+            <option value="4" ${t.phase===4?'selected':''}>P4 變現</option>
+          </select>
+        </div>
+        <select onchange="changeStatus('${t.id}', this.value)" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[11px] rounded px-2 py-0.5 text-slate-700 dark:text-slate-300">
+          <option value="todo" ${t.status==='todo'?'selected':''}>📋 To Do</option>
+          <option value="in-progress" ${t.status==='in-progress'?'selected':''}>⚡ In Progress</option>
+          <option value="done" ${t.status==='done'?'selected':''}>✅ Done</option>
+        </select>
+      </div>
+      <h4 class="font-bold text-sm text-slate-900 dark:text-white leading-snug">${t.title}</h4>
+      
+      ${t.promptSnippet ? `
+        <div class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-500/20 rounded-lg px-2.5 py-1.5">
+          <span class="text-[10px] text-indigo-700 dark:text-indigo-300 font-medium truncate max-w-[220px]">💡 內嵌 AI 開發 Prompt</span>
+          <button onclick="copyPromptSnippet(\`${t.promptSnippet.replace(/`/g, "\\`")}\`)" class="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline font-bold shrink-0">📋 複製 Prompt</button>
+        </div>
+      ` : ''}
+
+      ${t.note ? `<div class="text-[11px] text-amber-800 dark:text-amber-300/90 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-500/20 rounded px-2.5 py-1">📌 ${t.note}</div>` : ''}
+      <div class="space-y-1.5 pt-1 border-t border-slate-100 dark:border-slate-800/80">
+        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
+          <span class="font-medium text-slate-700 dark:text-slate-300">AI Sub-tasks</span>
+          <button onclick="addSubtask('${t.id}')" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 cursor-pointer">+ 新增細項</button>
+        </div>
+        <div class="panze-inner rounded-lg p-2.5 border space-y-0.5">${subHtml}</div>
+      </div>
+    </div>
+  `;
+}
+
+function render() {
+  try {
+    const kpiEl = document.getElementById('kpiOverview');
+    if (kpiEl) {
+      let allSubtasks = 0, doneSubtasks = 0;
+      (state.tasks || []).forEach(t => {
+        (t.subtasks || []).forEach(s => {
+          allSubtasks++;
+          if (s.done) doneSubtasks++;
+        });
+      });
+      const totalTasks = (state.tasks || []).length;
+      const inProgressTasks = (state.tasks || []).filter(t => t.status === 'in-progress').length;
+      const donePercent = allSubtasks === 0 ? 0 : Math.round((doneSubtasks / allSubtasks) * 100);
+      
+      const toolsSet = new Set();
+      (state.projects || []).forEach(p => (p.tools || []).forEach(t => { if(t && t.tool) toolsSet.add(t.tool); }));
+
+      kpiEl.innerHTML = `
+        <div class="panze-card rounded-xl p-3.5 space-y-1">
+          <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">總任務 / 焦點</span>
+          <div class="flex items-baseline gap-2">
+            <span class="text-xl font-bold text-slate-900 dark:text-white">${totalTasks}</span>
+            <span class="text-xs font-semibold text-indigo-600 dark:text-indigo-400">⚡ ${inProgressTasks} 進行中</span>
+          </div>
+        </div>
+        <div class="panze-card rounded-xl p-3.5 space-y-1">
+          <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">整體 Sub-tasks 完成率</span>
+          <div class="flex items-baseline gap-2">
+            <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400">${donePercent}%</span>
+            <span class="text-xs text-slate-400">(${doneSubtasks}/${allSubtasks})</span>
+          </div>
+        </div>
+        <div class="panze-card rounded-xl p-3.5 space-y-1">
+          <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">活躍專案規模</span>
+          <div class="flex items-baseline gap-2">
+            <span class="text-xl font-bold text-slate-900 dark:text-white">${(state.projects || []).length} 個</span>
+            <span class="text-xs font-semibold text-amber-600 dark:text-amber-400">跨專案管理</span>
+          </div>
+        </div>
+        <div class="panze-card rounded-xl p-3.5 space-y-1">
+          <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">AI 工具矩陣規模</span>
+          <div class="flex items-baseline gap-2">
+            <span class="text-xl font-bold text-violet-600 dark:text-violet-400">${toolsSet.size} 款</span>
+            <span class="text-xs text-slate-400">協同分工</span>
+          </div>
+        </div>
+      `;
+    }
+
+    const pHeader = document.getElementById('projectsHeader');
+    if (pHeader) {
+      pHeader.innerText = `Active Projects & Phase Tracker (${(state.projects || []).length} Projects)`;
+    }
+
+    const pGrid = document.getElementById('projectGrid');
+    if (pGrid) {
+      pGrid.innerHTML = (state.projects || []).map(p => {
+        const pct = getProjectProgress(p.id);
+        const isSelected = activeProject === p.id;
+        const curPhase = p.currentPhase || 1;
+
+        let badgeHtml = '';
+        if (p.status === 'ontrack') {
+          badgeHtml = '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-500/30">🟢 On Track</span>';
+        } else if (p.status === 'review') {
+          badgeHtml = '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-500/30">🔴 Review</span>';
+        } else {
+          badgeHtml = '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-500/30">🟡 Active</span>';
+        }
+
+        const links = [];
+        if (p.prodUrl) {
+          links.push(`<a href="${p.prodUrl}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 transition font-medium" title="Production: ${p.prodUrl}">🌐 Prod</a>`);
+        }
+        if (p.testUrl) {
+          links.push(`<a href="${p.testUrl}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 transition font-medium" title="Testing/Staging: ${p.testUrl}">🧪 Test</a>`);
+        }
+        if (p.githubRepo) {
+          const ghUrl = p.githubRepo.startsWith('http') ? p.githubRepo : `https://github.com/${p.githubRepo}`;
+          links.push(`<a href="${ghUrl}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 transition font-medium" title="GitHub Repository: ${p.githubRepo}">🐙 Repo</a>`);
+        }
+
+        return `
+          <div class="panze-card cursor-pointer rounded-xl p-4 transition relative flex flex-col justify-between ${isSelected ? 'border-indigo-500 ring-2 ring-indigo-500/30 bg-indigo-50/50 dark:bg-indigo-950/20' : ''}">
+            <div class="space-y-2.5" onclick="filterProject('${p.id}')">
+              <div class="flex items-center justify-between gap-1">
+                <span class="font-bold text-sm text-slate-900 dark:text-white truncate">${p.name}</span>
+                ${badgeHtml}
+              </div>
+
+              ${links.length > 0 ? `
+                <div class="flex flex-wrap items-center gap-1.5 pt-0.5">
+                  ${links.join('')}
+                </div>
+              ` : ''}
+
+              <div class="space-y-1">
+                <div class="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                  <span>目前階段</span>
+                  <span class="text-indigo-600 dark:text-indigo-400 font-bold">${PHASE_NAMES[curPhase] || 'Phase 2: MVP 原型'}</span>
+                </div>
+                <div class="grid grid-cols-4 gap-1">
+                  ${[1, 2, 3, 4].map(idx => `
+                    <div class="h-1.5 rounded-full ${idx <= curPhase ? 'bg-indigo-500' : 'bg-slate-200 dark:bg-slate-800'} transition-colors"></div>
+                  `).join('')}
+                </div>
+              </div>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">${p.desc || ''}</p>
+            </div>
+
+            <div class="space-y-1.5 pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">專用 AI 工具鏈 (點擊過濾)：</div>
+              <div class="flex flex-wrap gap-1">
+                ${(p.tools || []).map(tl => `
+                  <button type="button" onclick="event.stopPropagation(); filterAiTool('${tl.tool}')" class="text-[10px] mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 text-slate-700 dark:text-slate-300 transition" title="點擊過濾此 AI 工具任務">
+                    <span class="text-emerald-600 dark:text-emerald-400">${tl.tool}</span>
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    const sel = document.getElementById('newProject');
+    if (sel) {
+      sel.innerHTML = (state.projects || []).map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    }
+
+    const fLabel = document.getElementById('filterLabel');
+    if (fLabel) {
+      let labelText = `顯示全部 Projects (${(state.projects || []).length})`;
+      if (activeProject !== 'ALL') {
+        const proj = (state.projects || []).find(p => p.id === activeProject);
+        labelText = `已過濾專案: ${proj ? proj.name : activeProject}`;
+      }
+      if (activeAiToolFilter !== 'ALL') {
+        labelText += ` · AI 工具: ${activeAiToolFilter}`;
+      }
+      fLabel.innerText = labelText;
+    }
+
+    let filtered = state.tasks || [];
+    if (activeProject !== 'ALL') {
+      filtered = filtered.filter(t => t.projectId === activeProject);
+    }
+    if (activeAiToolFilter !== 'ALL') {
+      filtered = filtered.filter(t => (t.subtasks || []).some(s => (s.aiTool || '').includes(activeAiToolFilter)));
+    }
+
+    const container = document.getElementById('viewContainer');
+    if (!container) return;
+
+    if (currentTab === 'focus') {
+      const focusTasks = filtered.filter(t => t.status !== 'done');
+      container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${focusTasks.map(renderTaskCard).join('')}</div>`;
+    } else if (currentTab === 'kanban') {
+      const cols = [{ key: 'todo', label: '📋 To Do' }, { key: 'in-progress', label: '⚡ In Progress' }, { key: 'done', label: '✅ Done' }];
+      container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">${cols.map(c => `
+        <div class="panze-card rounded-xl p-3.5 space-y-3">
+          <div class="font-bold text-xs text-slate-700 dark:text-slate-300 px-1 flex items-center justify-between">
+            <span>${c.label}</span>
+            <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-950 text-slate-500 dark:text-slate-400">${filtered.filter(t => t.status === c.key).length}</span>
+          </div>
+          <div class="space-y-3">${filtered.filter(t => t.status === c.key).map(renderTaskCard).join('')}</div>
+        </div>
+      `).join('')}</div>`;
+    } else if (currentTab === 'roadmap') {
+      const phases = [
+        { id: 1, name: 'Phase 1: 需求釐清 & 規格定義', desc: '釐清核心用戶價值主張與資料模型' },
+        { id: 2, name: 'Phase 2: MVP 原型建置', desc: '使用 AI 工具快速完成可走通之 Demo' },
+        { id: 3, name: 'Phase 3: 實測反饋 & 優化', desc: '收集反饋、修復登入與資料計算盲點' },
+        { id: 4, name: 'Phase 4: 變現機制驗證', desc: '上線付費方案、流量獲客與跨通路轉化' }
+      ];
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          ${phases.map(ph => {
+            const phTasks = filtered.filter(t => (t.phase || 2) === ph.id);
+            return `
+              <div class="panze-card rounded-xl p-4 space-y-3 border-l-4 ${ph.id === 2 ? 'border-l-indigo-500' : 'border-l-slate-400'}">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800/80 pb-2">
+                  <div>
+                    <h3 class="font-bold text-sm text-slate-900 dark:text-white">${ph.name}</h3>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">${ph.desc}</p>
+                  </div>
+                  <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300">
+                    ${phTasks.length} 個任務
+                  </span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  ${phTasks.length > 0 ? phTasks.map(renderTaskCard).join('') : '<div class="text-xs text-slate-400 italic py-2 col-span-full">此階段目前尚無任務</div>'}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+  } catch (err) {
+    console.error("Render loop caught error:", err);
+  }
+}
+
+window.addEventListener('load', () => {
+  initTheme();
+  document.getElementById('btnThemeToggle').onclick = toggleTheme;
+
+  document.getElementById('btnConfigModal').onclick = openConfigModal;
+  document.getElementById('btnCloseConfig').onclick = closeConfigModal;
+  document.getElementById('btnCancelConfig').onclick = closeConfigModal;
+
+  document.getElementById('btnSaveConfig').onclick = () => {
+    syncConfig.sbUrl = document.getElementById('sbUrl').value.trim();
+    syncConfig.sbKey = document.getElementById('sbKey').value.trim();
+    localStorage.setItem('york_cloud_config_v1', JSON.stringify(syncConfig));
+    closeConfigModal();
+    initSupabaseHub();
+  };
+
+  // 一鍵強制重設按鈕（保證任何時候均可恢復原貌）
+  document.getElementById('btnForceReset').onclick = () => {
+    if (confirm('確定要清除本機快取並復原預設專案資料嗎？')) {
+      localStorage.removeItem(STORAGE_KEY);
+      state = DEFAULT_DATA;
+      save();
+      location.reload();
+    }
+  };
+
+  document.getElementById('btnOpenAddProject').onclick = openAddProjectModal;
+  document.getElementById('btnCloseProjModal').onclick = closeAddProjectModal;
+  document.getElementById('btnCancelProjModal').onclick = closeAddProjectModal;
+
+  document.getElementById('btnSaveNewProject').onclick = () => {
+    const id = document.getElementById('projNewId').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+    const name = document.getElementById('projNewName').value.trim();
+    const desc = document.getElementById('projNewDesc').value.trim();
+    const prodUrl = document.getElementById('projNewProdUrl').value.trim();
+    const testUrl = document.getElementById('projNewTestUrl').value.trim();
+    const githubRepo = document.getElementById('projNewGithub').value.trim();
+    const currentPhase = parseInt(document.getElementById('projNewPhase').value) || 2;
+    const status = document.getElementById('projNewStatus').value || 'active';
+    const rawTools = document.getElementById('projNewTools').value.trim();
+
+    if (!id || !name) {
+      alert('請填寫專案代號 (ID) 與專案名稱！');
+      return;
+    }
+    if ((state.projects || []).some(p => p.id === id)) {
+      alert(`專案代號 "${id}" 已經存在！`);
+      return;
+    }
+
+    const tools = [];
+    if (rawTools) {
+      rawTools.split('\n').forEach(line => {
+        const parts = line.split(/[:：]/);
+        if (parts.length >= 2) {
+          tools.push({ tool: parts[0].trim(), role: parts.slice(1).join(':').trim() });
+        } else if (line.trim()) {
+          tools.push({ tool: line.trim(), role: '專屬開發輔助' });
+        }
+      });
+    }
+
+    state.projects.push({
+      id,
+      name,
+      desc: desc || '自主開發專案',
+      currentPhase,
+      status,
+      prodUrl,
+      testUrl,
+      githubRepo,
+      tools: tools.length > 0 ? tools : [{ tool: 'Grok Build', role: '全端開發輔助' }]
+    });
+
+    closeAddProjectModal();
+    save();
+  };
+
+  document.getElementById('btnAddTask').onclick = () => {
+    const title = document.getElementById('newTitle').value.trim();
+    if (!title) return;
+    const projectId = document.getElementById('newProject').value;
+    const phase = parseInt(document.getElementById('newPhase').value) || 2;
+    const aiTool = document.getElementById('newAiTool').value.trim() || 'Supabase Realtime';
+    state.tasks.unshift({
+      id: 't_' + Date.now(),
+      projectId,
+      phase,
+      title,
+      status: 'in-progress',
+      note: '',
+      subtasks: [{ text: '落實執行方針', aiTool, done: false }]
+    });
+    document.getElementById('newTitle').value = '';
+    document.getElementById('newAiTool').value = '';
+    save();
+  };
+
+  document.getElementById('tabFocus').onclick = () => setTab('focus');
+  document.getElementById('tabKanban').onclick = () => setTab('kanban');
+  document.getElementById('tabRoadmap').onclick = () => setTab('roadmap');
+  document.getElementById('btnResetFilter').onclick = resetAllFilters;
+
+  render();
+  initSupabaseHub();
+});
+</script>
+</body>
+</html>
